@@ -50,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
       // YOUR CODE STARTS HERE
       filter((value) => value.length >= 3),
       debounceTime(200),
-      map((searchTerm) => this.mockDataService.getCharacters())
+      switchMap((searchTerm) => this.mockDataService.getCharacters(searchTerm))
       // YOUR CODE ENDS HERE
     );
   }
@@ -62,7 +62,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.planetAndCharactersResults$ = forkJoin([
       this.mockDataService.getCharacters(),
       this.mockDataService.getPlanets(),
-    ]);
+    ]).pipe(
+      map(([characters, planets]) => [
+        ...characters.map((char: any) => char.name),
+        ...planets.map((planet: any) => planet.name),
+      ])
+    );
     // YOUR CODE ENDS HERE
   }
 
@@ -90,7 +95,7 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // 5.2 Unsubscribe from all subscriptions
     // YOUR CODE STARTS HERE
-    this.subscriptions.map((sub) => sub.unsubscribe());
+    this.subscriptions.forEach((sub) => sub.unsubscribe());
     // YOUR CODE ENDS HERE
   }
 
