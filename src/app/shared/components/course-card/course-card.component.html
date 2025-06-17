@@ -24,9 +24,9 @@
       <div class="course-card__buttons">
         <!--Enter your code here-->
         <app-button [buttonText]="'Show course'"></app-button>
-        @if (isEditable) {
-        <ng-content></ng-content>
-        }
+        <ng-container *ngIf="isEditable">
+          <ng-content></ng-content>
+        </ng-container>
       </div>
     </div>
   </div>
