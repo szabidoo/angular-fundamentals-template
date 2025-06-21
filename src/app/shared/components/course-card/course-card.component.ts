@@ -1,4 +1,4 @@
-import { Component, Input, Output } from "@angular/core";
+import { Component, EventEmitter, Input, Output } from "@angular/core";
 
 @Component({
   selector: "app-course-card",
@@ -7,7 +7,7 @@ import { Component, Input, Output } from "@angular/core";
 })
 export class CourseCardComponent {
   @Input() isEditable!: boolean;
-  @Output() clickOnShow!: any;
+  @Output() clickOnShow!: EventEmitter<any>;
   title!: string;
   description!: string;
   creationDate!: Date;

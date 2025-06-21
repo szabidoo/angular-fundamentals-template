@@ -7,6 +7,6 @@ import { Component, Input } from "@angular/core";
 })
 export class InfoComponent {
   // Use the names `title` and `text`.
-  @Input() title?: string;
+  @Input() title!: string;
   @Input() text?: string;
 }
