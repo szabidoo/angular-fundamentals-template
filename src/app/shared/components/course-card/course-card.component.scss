@@ -30,5 +30,17 @@
     &-text {
       margin-top: 16px;
     }
+
+    &-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: 10px;
+    }    
+  }
+
+  &__buttons {
+    display: flex;
+    gap: 5px;
   }
 }

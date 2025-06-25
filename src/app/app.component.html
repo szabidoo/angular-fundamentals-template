@@ -1,24 +1,86 @@
 <app-header>
-  <app-button></app-button>
+  <ng-container *ngIf="isLoggedIn; else loggedOut">
+    <span style="font-weight: bold">Harry Potter</span>
+    <div style="width: 120px" (click)="toggleLogin()">
+      <app-button buttonText="LOGOUT"></app-button>
+    </div>
+  </ng-container>
+
+  <ng-template #loggedOut>
+    <div style="width: 120px" (click)="toggleLogin()">
+      <app-button buttonText="LOGIN"></app-button>
+    </div>
+  </ng-template>
 </app-header>
+
 <div class="app-root">
-  <!-- Search component -->
-  <!--<app-search></app-search>-->
+  <!-- Button component -->
+
+  <h3>Button component</h3>
+
+  <app-button iconName="trash"></app-button>
+  <app-button buttonText="Show course"></app-button>
 
   <!-- Info component -->
-  <!--<app-info></app-info>-->
+
+  <h3>Info component</h3>
+
+  <app-info [title]="'Your List Is Empty'" [text]="'Please use ‘Add New Course’ button to add your first course'">
+    <app-button buttonText="Add New Course"></app-button>
+  </app-info>
 
   <!-- Course Card component -->
-  <!--<app-course-card></app-course-card>-->
+
+  <h3>Course Card Component</h3>
+  <app-course-card
+    [title]="testCourse.title"
+    [description]="testCourse.description"
+    [authors]="testCourse.authors"
+    [duration]="testCourse.duration"
+    [creationDate]="testCourse.creationDate"
+    [editable]="testCourse.editable"
+    (clickOnShow)="onShowCourse(testCourse.id)"
+  >
+    <app-button iconName="trash"></app-button>
+    <app-button iconName="pen"></app-button>
+  </app-course-card>
+
+  <!-- Course list component -->
+
+  <h3>Course list Component</h3>
+
+  <app-courses-list
+    [courses]="coursesList"
+    [editable]="true"
+    (showCourse)="onShowCourse($event)"
+    (editCourse)="onEditCourse($event)"
+    (deleteCourse)="onDeleteCourse($event)"
+  ></app-courses-list>
+
+  <!-- Course info component -->
+
+  <h3>Course info Component</h3>
+
+  <app-course-info
+    [id]="testCourse.id"
+    [title]="testCourse.title"
+    [description]="testCourse.description"
+    [creationDate]="testCourse.creationDate"
+    [duration]="testCourse.duration"
+    [authors]="testCourse.authors"
+  ></app-course-info>
+
+  <!-- Search component -->
+  <app-search></app-search>
 
   <!-- Login Form component -->
-  <!--<app-login-form></app-login-form>-->
+  <app-login-form></app-login-form>
 
-  <!-- Login Form component -->
-  <!--<app-registration-form></app-registration-form>-->
+  <!-- Registration Form component -->
+  <app-registration-form></app-registration-form>
 
-  <!-- Login Form component -->
-  <!--<app-course-form></app-course-form>-->
+  <!-- Course Form component -->
+  <app-course-form></app-course-form>
 
   <!-- Modal component -->
   <!-- <app-modal [message]="'Message'" [title]="'Title'" [okButtonText]="'Ok'" [cancelButtonText]="'Cancel'"></app-modal> -->

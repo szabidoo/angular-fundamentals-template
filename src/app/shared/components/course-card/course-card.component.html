@@ -1,33 +1,29 @@
 <div class="course-card">
-  <div class="course-card__description">
-    <!-- Replace ::text:: with your code -->
-    <div class="course-card__description-title">{{ title }}</div>
-    <div class="course-card__description-text">{{ description }}</div>
-  </div>
-  <div class="course-card__info">
-    <div class="course-card__info-text">
-      <div>
-        <b>Authors: </b>
-        {{ authors }}
-      </div>
-      <div>
-        <b>Duration: </b
-        ><span class="course-card__duration">{{ duration }}</span>
-      </div>
-      <div>
-        <b>Created: </b
-        ><span class="course-card__date">{{ creationDate }}</span>
-      </div>
+    <div class="course-card__description">
+      <!-- Replace ::text:: with your code -->
+      <div class="course-card__description-title">{{ title }}</div>
+      <div class="course-card__description-text">{{ description }}</div>
     </div>
-    <div class="course-card__info-actions">
-      <app-button></app-button>
-      <div class="course-card__buttons">
-        <!--Enter your code here-->
-        <app-button [buttonText]="'Show course'"></app-button>
-        <ng-container *ngIf="isEditable">
-          <ng-content></ng-content>
-        </ng-container>
-      </div>
+
+    <div class="course-card__info">
+        <div class="course-card__info-text">
+            <div>
+              <b>Authors: </b>
+              {{ authors.join(', ') }}
+            </div>
+            <div><b>Duration: </b><span class="course-card__duration">{{ formattedDuration }}</span></div>
+            <div><b>Created: </b><span class="course-card__date">{{ formattedDate }}</span></div>
+        </div>
+
+        <div class="course-card__info-actions">
+            <app-button
+                buttonText="Show course"
+                (click)="clickOnShow.emit()"
+            ></app-button>
+
+            <div *ngIf="editable" class="course-card__buttons">
+                <ng-content></ng-content>
+            </div>
+        </div>
     </div>
-  </div>
 </div>

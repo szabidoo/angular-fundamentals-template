@@ -1,28 +1,56 @@
 <h2 class="text-align-center">Login</h2>
 <div class="app-plate">
-  <form #loginForm="ngForm">
+  <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
     <div class="login-form">
       <div>
         <div class="form__control">
           <label for="email">Email</label>
           <!--Use the name `email` for the form control.-->
-          <input type="text" id="email" placeholder="Input text"/>
-          <span id="emailErrorMessage" class="text-danger">Email is required.</span>
+          <input
+            type="text"
+            id="email"
+            placeholder="Input text"
+            [(ngModel)]="email"
+            required
+            emailValidator
+            #emailInput="ngModel"
+            name="email"
+          />
+
+          <span
+            id="emailErrorMessage"
+            class="text-danger"
+            [style.visibility]="
+              emailInput.invalid && (emailInput.touched || loginForm.submitted) ? 'visible' : 'hidden'
+            "
+            >Email is required.</span
+          >
         </div>
         <div class="form__control">
           <label for="password">Password</label>
           <!--Use the name `password` for the form control.-->
-          <input type="password" id="password" placeholder="Input text"/>
-          <span id="passwordErrorMessage" class="text-danger">Password is required.</span>
+          <input
+            type="password"
+            id="password"
+            placeholder="Input text"
+            [(ngModel)]="password"
+            #passwordInput="ngModel"
+            name="password"
+            required
+          />
+          <span
+            id="passwordErrorMessage"
+            class="text-danger"
+            [style.visibility]="passwordInput.errors?.['required'] && (passwordInput.touched || loginForm.submitted) ? 'visible' : 'hidden'"
+            >Password is required.</span
+          >
         </div>
       </div>
       <div>
         <div class="form__action">
-          <app-button></app-button>
+          <app-button [buttonText]="'LOGIN'" type="submit"></app-button>
         </div>
-        <div class="form__text">
-          If you don't have an account you may <strong>Registration</strong>
-        </div>
+        <div class="form__text">If you don't have an account you may <strong>Registration</strong></div>
       </div>
     </div>
   </form>

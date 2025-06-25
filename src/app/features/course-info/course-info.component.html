@@ -1,29 +1,33 @@
-<!-- Replace ::text:: with your code -->
-
 <div class="title">{{ title }}</div>
+
 <div class="course-info">
   <div class="course-info__description">
     {{ description }}
   </div>
   <div class="course-info__info">
     <div>
-      <b>ID: </b><span class="course-info__info-id">{{ id }}</span>
+      <b>ID: </b>
+      <span class="course-info__info-id">{{ id }}</span>
     </div>
+
     <div>
-      <b>Duration: </b
-      ><span class="course-info__info-duration">{{ duration }}</span>
+      <b>Duration: </b>
+      <span class="course-info__info-duration">{{ formattedDuration }}</span>
     </div>
+
     <div>
-      <b>Created: </b
-      ><span class="course-info__info-date">{{ creationDate }}</span>
+      <b>Created: </b>
+      <span class="course-info__info-date">{{ formattedDate }}</span>
     </div>
+
     <div>
-      <b>Authors: </b
-      ><span class="course-info__info-authors">{{ authors }}</span>
+      <b>Authors: </b>
+      <span class="course-info__info-authors">{{ authors.join(', ') }}</span>
     </div>
   </div>
 </div>
+
 <div class="navigation-block">
-  <!--Enter your code here-->
-  <app-button [buttonText]="'Back'"></app-button>
+  <app-button buttonText="Back" (click)="goBack()"></app-button>
 </div>
+

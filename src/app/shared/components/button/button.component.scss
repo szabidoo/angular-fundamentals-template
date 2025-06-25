@@ -1,29 +1,50 @@
+@import "../../styles/variables/colors.scss";
+
 .app-button {
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 13px 36px;
-  gap: 10px;
-  background: #007298;
+  background: $color-ligth-blue;
   border-radius: 4px;
-  color: #fff;
+  border: none;
+  color: $color-white;
   text-transform: uppercase;
   cursor: pointer;
+  margin: 2px;
+  white-space: nowrap;
+  width: 100%;
+  font-weight: 700;
+
+  &__outlined {
+    background-color: transparent;
+    color: $color-ligth-blue;
+
+    padding: 1px;
+    margin: 1px;
+    width: 30px;
+    height: 30px;
+  }
 
   &:hover {
-    background: #016486;
-  }
-
-  &__single-icon {
-    padding: 13px;
-  }
-
-  &:active {
-    background: #016486;
+    background: $color-dark-blue;
   }
 
   &:focus {
-    background: #016486;
+    background-color: $color-dark-gray;
+    outline: 2px solid $color-white;
+    outline-offset: 2px;
+  }
+
+  &:active {
+    background-color: $color-dark-gray;
+  }
+
+  &__icon {
+    padding: 13px 16px;
+  }
+
+  &__text {
+    padding: 13px 36px;
   }
 }
