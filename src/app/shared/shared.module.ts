@@ -16,6 +16,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import { DurationPipe } from './pipes/duration.pipe';
 import { CustomDatePipe } from './pipes/custom-date.pipe';
 import { EmailValidatorDirective } from '@shared/directives/email.directive';
+import { AttributeDirective } from './directives/attribute.directive';
 
 const components = [
   HeaderComponent,
@@ -33,7 +34,7 @@ const components = [
 ];
 
 @NgModule({
-  declarations: [components],
+  declarations: [components, AttributeDirective],
   imports: [
     CommonModule,
     FontAwesomeModule,

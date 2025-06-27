@@ -27,7 +27,22 @@
       <div class="form__control">
         <!--Use the name `password` for the form control.-->
         <label for="password">Password</label>
-        <input type="password" id="password" placeholder="Input text" formControlName="password" />
+        <div class="password-input-group">
+          <input
+            type="password"
+            id="password"
+            placeholder="Input text"
+            formControlName="password"
+            appAttribute
+            #passwordToggle="togglePassword"
+          />
+          <app-button
+            [iconName]="passwordToggle.eyeIcon"
+            [variant]="'outlined'"
+            (click)="passwordToggle.togglePasswordVisibility()"
+            type="button"
+          ></app-button>
+        </div>
         <span
           id="passwordErrorMessage"
           class="text-danger"

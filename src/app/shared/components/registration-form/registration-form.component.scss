@@ -7,3 +7,20 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
+.password-input-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  input {
+    flex: 1;
+    padding-right: 50px;
+  }
+
+  app-button {
+    position: absolute;
+    right: 8px;
+    z-index: 1;
+  }
+}

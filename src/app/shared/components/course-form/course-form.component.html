@@ -52,7 +52,7 @@
             class="course__duration__input"
           />
           <div class="course__duration__value">
-            <span style="font-weight: 700">{{ courseForm.get("duration")?.value }}</span> hours
+            <span style="font-weight: 700">{{ courseForm.get("duration")?.value | duration }}</span>
           </div>
         </div>
         <span

@@ -12,17 +12,17 @@
 
     <div>
       <b>Duration: </b>
-      <span class="course-info__info-duration">{{ formattedDuration }}</span>
+      <span class="course-info__info-duration">{{ duration | duration }}</span>
     </div>
 
     <div>
       <b>Created: </b>
-      <span class="course-info__info-date">{{ formattedDate }}</span>
+      <span class="course-info__info-date">{{ creationDate | customDate }}</span>
     </div>
 
     <div>
       <b>Authors: </b>
-      <span class="course-info__info-authors">{{ authors.join(', ') }}</span>
+      <span class="course-info__info-authors">{{ authors.join(", ") }}</span>
     </div>
   </div>
 </div>
@@ -30,4 +30,3 @@
 <div class="navigation-block">
   <app-button buttonText="Back" (click)="goBack()"></app-button>
 </div>
-
