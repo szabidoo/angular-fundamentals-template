@@ -11,9 +11,7 @@
         <span
           id="titleErrorMessage"
           class="text-danger"
-          *ngIf="
-            courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted) ? 'visible' : 'hidden'
-          "
+          *ngIf="courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted)"
           >Title is required.</span
         >
       </div>
@@ -31,11 +29,7 @@
         <span
           id="descriptionErrorMessage"
           class="text-danger"
-          *ngIf="
-            courseForm.get('description')?.invalid && (courseForm.get('description')?.touched || isSubmitted)
-              ? 'visible'
-              : 'hidden'
-          "
+          *ngIf="courseForm.get('description')?.invalid && (courseForm.get('description')?.touched || isSubmitted)"
           >Description is required.</span
         >
       </div>
@@ -58,11 +52,7 @@
         <span
           id="durationErrorMessage"
           class="text-danger"
-          *ngIf="
-            courseForm.get('duration')?.invalid && (courseForm.get('duration')?.touched || isSubmitted)
-              ? 'visible'
-              : 'hidden'
-          "
+          *ngIf="courseForm.get('duration')?.invalid && (courseForm.get('duration')?.touched || isSubmitted)"
           >Duration is required.</span
         >
       </div>
@@ -81,11 +71,7 @@
         </div>
         <span
           id="authorErrorMessage"
-          *ngIf="
-            courseForm.get('newAuthor')?.invalid && (courseForm.get('newAuthor')?.touched || isSubmitted)
-              ? 'visible'
-              : 'hidden'
-          "
+          *ngIf="courseForm.get('newAuthor')?.invalid && (courseForm.get('newAuthor')?.touched || isSubmitted)"
           >New author should contain only latin letters and numbers.</span
         >
         <div class="course__authors__section">

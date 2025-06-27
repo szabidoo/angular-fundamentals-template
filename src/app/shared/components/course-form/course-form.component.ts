@@ -1,10 +1,10 @@
 import { Component, OnInit } from "@angular/core";
-import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
+import { FormBuilder, FormGroup, Validators, FormArray } from "@angular/forms";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { mockedAuthorsList } from "@app/shared/mocks/mocks";
 import { Author } from "@app/shared/interfaces/author.interface";
-import { FormArray } from "@angular/forms";
+
 @Component({
   selector: "app-course-form",
   templateUrl: "./course-form.component.html",
@@ -22,22 +22,31 @@ export class CourseFormComponent implements OnInit {
     this.courseForm = this.fb.group({
       title: ["", Validators.compose([Validators.minLength(2), Validators.required])],
       description: ["", Validators.compose([Validators.minLength(2), Validators.required])],
-      newAuthor: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
-      authors: this.fb.array(this.authorsNameList),
-      courseAuthors: this.fb.array([], Validators.required),
-      duration: [null, [Validators.required, Validators.min(0)]],
+      author: ["", [Validators.minLength(2), this.latinLettersValidator]],
+      duration: [0, [Validators.required, Validators.min(0)]],
+      authors: this.fb.array([]),
     });
   }
 
   authorsNameList: Author["name"][] = mockedAuthorsList.map((auth) => auth.name);
   courseAuthorsNameList: Author["name"][] = [];
 
+  private latinLettersValidator(control: any) {
+    if (!control.value) return null;
+    const latinLettersPattern = /^[a-zA-Z\s]*$/;
+    return latinLettersPattern.test(control.value) ? null : { latinLetters: true };
+  }
+
+  get authorsFormArray(): FormArray {
+    return this.courseForm.get("authors") as FormArray;
+  }
+
   generateAuthorId() {
     return crypto.randomUUID();
   }
 
   createAuthor(): void {
-    const author = this.courseForm.get("newAuthor")?.value;
+    const author = this.courseForm.get("author")?.value;
 
     if (this.authorsNameList.includes(author)) {
       alert("Author is already in Authors List");
@@ -48,7 +57,7 @@ export class CourseFormComponent implements OnInit {
     this.generateAuthorId();
 
     (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
-    this.courseForm.get("newAuthor")?.reset();
+    this.courseForm.get("author")?.reset();
   }
 
   addAuthor(author: string): void {
