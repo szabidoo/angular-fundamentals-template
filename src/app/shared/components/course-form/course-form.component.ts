@@ -25,7 +25,7 @@ export class CourseFormComponent implements OnInit {
     this.courseForm = this.fb.group({
       title: ["", [Validators.minLength(2), Validators.required]],
       description: ["", [Validators.minLength(2), Validators.required]],
-      newAuthor: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
+      author: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
       authors: this.fb.array(this.authorsNameList),
       courseAuthors: this.fb.array([], Validators.required),
       duration: [null, [Validators.required, Validators.min(0)]],
@@ -37,7 +37,9 @@ export class CourseFormComponent implements OnInit {
   }
 
   createAuthor(): void {
-    const author = this.courseForm.get("newAuthor")?.value;
+    const author = this.courseForm.get("author")?.value;
+
+    if (!this.courseForm) return;
 
     if (!author.length) {
       return;
@@ -52,11 +54,14 @@ export class CourseFormComponent implements OnInit {
     this.generateAuthorId();
 
     (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
-    this.courseForm.get("newAuthor")?.setValue("");
+    this.courseForm.get("author")?.setValue("");
   }
 
   addAuthor(author: string): void {
     const index = this.authorsNameList.findIndex((item) => item === author);
+
+    if (!this.courseForm) return;
+
     if (index !== -1) {
       (this.courseForm.get("courseAuthors") as FormArray).push(this.fb.control(author));
 
@@ -69,6 +74,8 @@ export class CourseFormComponent implements OnInit {
 
   removeAuthor(author: string): void {
     const index = this.courseAuthorsNameList.findIndex((item) => item === author);
+
+    if (!this.courseForm) return;
     if (index !== -1) {
       (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
 
