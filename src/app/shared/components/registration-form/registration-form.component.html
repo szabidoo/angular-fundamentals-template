@@ -1,61 +1,60 @@
 <h2 class="text-align-center">Registration</h2>
 <div class="app-plate">
-  <form class="registration-form" [formGroup]="registrationForm">
-    <div>
-      <div class="form__control">
-        <label for="name">Name</label>
-        <!--Use the name `name` for the form control.-->
-        <input type="text" id="name" placeholder="Input text" formControlName="name" />
-        <span
-          id="nameErrorMessage"
-          class="text-danger"
-          *ngIf="registrationForm.get('name')?.invalid && registrationForm.get('name')?.touched"
-          >Name is required.</span
-        >
-      </div>
-      <div class="form__control">
-        <!--Use the name `email` for the form control.-->
-        <label for="email">Email</label>
-        <input type="text" id="email" placeholder="Input text" formControlName="email" />
-        <span
-          id="emailErrorMessage"
-          class="text-danger"
-          *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched"
-          >Email is required.</span
-        >
-      </div>
-      <div class="form__control">
-        <!--Use the name `password` for the form control.-->
-        <label for="password">Password</label>
-        <div class="password-input-group">
-          <input
-            type="password"
-            id="password"
-            placeholder="Input text"
-            formControlName="password"
-            appAttribute
-            #passwordToggle="togglePassword"
-          />
-          <app-button
-            [iconName]="passwordToggle.eyeIcon"
-            [variant]="'outlined'"
-            (click)="passwordToggle.togglePasswordVisibility()"
-            type="button"
-          ></app-button>
+  <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()">
+    <div class="registration-form">
+      <div>
+        <div class="form__control">
+          <label for="name">Name</label>
+          <input type="text" id="name" placeholder="Input text" formControlName="name" />
+          <span
+            id="nameErrorMessage"
+            class="text-danger"
+            *ngIf="registrationForm.get('name')?.invalid && (registrationForm.get('name')?.touched || isSubmitted)"
+          >
+            <span *ngIf="registrationForm.get('name')?.errors?.['required']">Name is required.</span>
+            <span *ngIf="registrationForm.get('name')?.errors?.['minlength']"
+              >Name should be at least 6 characters.</span
+            >
+          </span>
         </div>
-        <span
-          id="passwordErrorMessage"
-          class="text-danger"
-          *ngIf="
-            registrationForm.get('password')?.invalid && (registrationForm.get('password')?.touched || isSubmitted)
-          "
-          >Password is required.</span
-        >
+
+        <div class="form__control">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Input text" formControlName="email" emailValidator />
+          <span
+            id="emailErrorMessage"
+            class="text-danger"
+            *ngIf="registrationForm.get('email')?.invalid && (registrationForm.get('email')?.touched || isSubmitted)"
+          >
+            <span *ngIf="registrationForm.get('email')?.errors?.['required']">Email is required.</span>
+            <span
+              *ngIf="registrationForm.get('email')?.errors?.['email'] || registrationForm.get('email')?.errors?.['emailValidator']"
+              >Please enter a valid email.</span
+            >
+          </span>
+        </div>
+
+        <div class="form__control">
+          <label for="password">Password</label>
+          <input type="password" id="password" placeholder="Input text" formControlName="password" />
+          <span
+            id="passwordErrorMessage"
+            class="text-danger"
+            *ngIf="
+              registrationForm.get('password')?.invalid && (registrationForm.get('password')?.touched || isSubmitted)
+            "
+          >
+            Password is required.
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <div class="form__action">
+          <app-button [buttonText]="'REGISTRATION'" type="submit"></app-button>
+        </div>
+        <div class="form__text">If you have an account you can <strong>Login</strong></div>
       </div>
     </div>
-    <div class="form__action">
-      <app-button [buttonText]="'REGISTER'" (click)="onSubmit(registrationForm)"></app-button>
-    </div>
-    <div class="form__text">If you have an account you may <strong>Login</strong></div>
   </form>
 </div>

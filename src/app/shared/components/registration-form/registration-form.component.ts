@@ -21,10 +21,10 @@ export class RegistrationFormComponent implements OnInit {
     });
   }
 
-  onSubmit(form: FormGroup) {
-    Object.values(form.controls).forEach((control) => {
-      control.markAsTouched();
-    });
+  onSubmit() {
+    const form = this.registrationForm;
+
+    this.registrationForm.markAllAsTouched;
 
     if (form.valid) {
       console.log(form.value);
