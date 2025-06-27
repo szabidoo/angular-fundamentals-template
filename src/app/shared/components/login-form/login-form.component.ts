@@ -1,5 +1,5 @@
 import { Component, ViewChild } from "@angular/core";
-import { FormControl, NgForm } from "@angular/forms";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "app-login-form",
@@ -11,7 +11,7 @@ export class LoginFormComponent {
   //Use the names `email` and `password` for form controls.
 
   email!: string;
-  password!: FormControl;
+  password!: string;
 
   onSubmit(form: NgForm) {
     Object.values(form.controls).forEach((control) => {

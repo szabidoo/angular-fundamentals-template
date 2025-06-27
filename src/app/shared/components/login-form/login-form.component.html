@@ -20,7 +20,7 @@
           <span
             id="emailErrorMessage"
             class="text-danger"
-            *ngIf="emailInput.invalid && (emailInput.touched || loginForm.submitted) ? 'visible' : 'hidden'"
+            *ngIf="emailInput.invalid && (emailInput.touched || loginForm.submitted)"
             >Email is required.</span
           >
         </div>
@@ -39,7 +39,7 @@
           <span
             id="passwordErrorMessage"
             class="text-danger"
-            *ngIf="passwordInput.errors?.['required'] && (passwordInput.touched || loginForm.submitted) ? 'visible' : 'hidden'"
+            *ngIf="passwordInput.errors?.['required'] && (passwordInput.touched || loginForm.submitted)"
             >Password is required.</span
           >
         </div>

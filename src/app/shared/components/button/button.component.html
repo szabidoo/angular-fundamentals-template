@@ -1,4 +1,4 @@
-<button class="app-button" [ngClass]="{ 'app-button__outlined': variant === 'outlined' }">
+<button class="app-button" [type]="type" [ngClass]="{ 'app-button__outlined': variant === 'outlined' }">
   <fa-icon *ngIf="iconName" [icon]="['fas', iconName]" class="app-button__icon"></fa-icon>
 
   <span *ngIf="buttonText" class="app-button__text">{{ buttonText }}</span>

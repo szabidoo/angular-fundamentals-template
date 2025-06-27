@@ -21,9 +21,7 @@ export class RegistrationFormComponent implements OnInit {
     });
   }
 
-  onSubmit() {
-    const form = this.registrationForm;
-
+  onSubmit(form: FormGroup) {
     Object.values(form.controls).forEach((control) => {
       control.markAsTouched();
     });

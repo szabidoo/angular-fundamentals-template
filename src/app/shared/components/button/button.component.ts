@@ -11,6 +11,7 @@ export class ButtonComponent {
   @Input() buttonText?: string;
   @Input() iconName?: IconName;
   @Input() variant?: "outlined" | null;
+  @Input() type?: "button" | "submit";
 
   constructor(library: FaIconLibrary) {
     library.addIconPacks(fas);

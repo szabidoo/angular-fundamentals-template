@@ -1,6 +1,6 @@
 <!-- Replace ::text:: with your code -->
 <h2>Create / Edit Course</h2>
-<form [formGroup]="courseForm">
+<form [formGroup]="courseForm" (ngSubmit)="onSubmit()">
   <div class="app-plate">
     <div class="course">
       <h3>Main Info</h3>
@@ -67,6 +67,7 @@
             id="createAuthor"
             (click)="this.createAuthor()"
             [buttonText]="'CREATE AUTHOR'"
+            [type]="'button'"
           ></app-button>
         </div>
         <span
@@ -108,7 +109,7 @@
         <app-button
           [buttonText]="'create course'"
           class="form__action__create-course controll-button"
-          (click)="onSubmit(courseForm)"
+          [type]="'submit'"
         ></app-button>
       </div>
     </div>
