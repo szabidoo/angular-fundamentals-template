@@ -17,20 +17,20 @@ export class CourseFormComponent implements OnInit {
   courseForm!: FormGroup;
   // Use the names `title`, `description`, `author`, 'authors' (for authors list), `duration` for the form controls.
 
+  authorsNameList: Author["name"][] = mockedAuthorsList.map((auth) => auth.name);
+  courseAuthorsNameList: Author["name"][] = [];
+
   isSubmitted: boolean = false;
   ngOnInit(): void {
     this.courseForm = this.fb.group({
       title: ["", [Validators.minLength(2), Validators.required]],
-      description: ["", Validators.compose([Validators.minLength(2), Validators.required])],
+      description: ["", [Validators.minLength(2), Validators.required]],
       newAuthor: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
       authors: this.fb.array(this.authorsNameList),
       courseAuthors: this.fb.array([], Validators.required),
       duration: [null, [Validators.required, Validators.min(0)]],
     });
   }
-
-  authorsNameList: Author["name"][] = mockedAuthorsList.map((auth) => auth.name);
-  courseAuthorsNameList: Author["name"][] = [];
 
   generateAuthorId() {
     return crypto.randomUUID();

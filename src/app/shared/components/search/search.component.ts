@@ -14,6 +14,8 @@ export class SearchComponent {
   @Output() search = new EventEmitter<string>();
 
   onSubmit(value: string) {
-    this.search.emit(value);
+    const searchValue = value || "";
+
+    this.search.emit(searchValue);
   }
 }
