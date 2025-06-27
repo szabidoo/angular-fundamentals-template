@@ -7,10 +7,10 @@ import { Author } from "@app/shared/interfaces/author.interface";
 import { FormArray } from "@angular/forms";
 @Component({
   selector: "app-course-form",
-  templateUrl: "./course-form.component.html",
+  templateUrl: "./course.component.html",
   styleUrls: ["./course-form.component.scss"],
 })
-export class CourseFormComponent implements OnInit {
+export class CourseComponent implements OnInit {
   constructor(public fb: FormBuilder, public library: FaIconLibrary) {
     library.addIconPacks(fas);
   }
