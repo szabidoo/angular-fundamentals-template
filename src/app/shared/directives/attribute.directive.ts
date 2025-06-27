@@ -1,6 +1,5 @@
-import { Directive, Renderer2 } from "@angular/core";
-import { ElementRef } from "@angular/core";
-import { IconName } from "@fortawesome/free-solid-svg-icons";
+import { Directive, ElementRef, Renderer2 } from "@angular/core";
+import { IconName } from "@fortawesome/fontawesome-common-types";
 
 @Directive({
   selector: "[appAttribute]",
@@ -25,7 +24,7 @@ export class AttributeDirective {
 
   togglePasswordVisibility(): void {
     this._isPasswordVisible = !this._isPasswordVisible;
-    const inputType = this.isPasswordVisible ? "text" : "password";
+    const inputType = this._isPasswordVisible ? "text" : "password";
     this.renderer.setAttribute(this.elementRef.nativeElement, "type", inputType);
   }
 }

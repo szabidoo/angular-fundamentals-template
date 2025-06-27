@@ -11,7 +11,7 @@ export class SearchComponent {
   // Use the name `search` for the @Output.
 
   @Input() placeholder?: string;
-  @Output() search!: EventEmitter<string>;
+  @Output() search = new EventEmitter<string>();
 
   onSubmit(value: string) {
     this.search.emit(value);

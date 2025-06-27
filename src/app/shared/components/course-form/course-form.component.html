@@ -11,7 +11,7 @@
         <span
           id="titleErrorMessage"
           class="text-danger"
-          [style.visibility]="
+          *ngIf="
             courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted) ? 'visible' : 'hidden'
           "
           >Title is required.</span
@@ -31,7 +31,7 @@
         <span
           id="descriptionErrorMessage"
           class="text-danger"
-          [style.visibility]="
+          *ngIf="
             courseForm.get('description')?.invalid && (courseForm.get('description')?.touched || isSubmitted)
               ? 'visible'
               : 'hidden'
@@ -58,7 +58,7 @@
         <span
           id="durationErrorMessage"
           class="text-danger"
-          [style.visibility]="
+          *ngIf="
             courseForm.get('duration')?.invalid && (courseForm.get('duration')?.touched || isSubmitted)
               ? 'visible'
               : 'hidden'
@@ -81,7 +81,7 @@
         </div>
         <span
           id="authorErrorMessage"
-          [style.visibility]="
+          *ngIf="
             courseForm.get('newAuthor')?.invalid && (courseForm.get('newAuthor')?.touched || isSubmitted)
               ? 'visible'
               : 'hidden'
