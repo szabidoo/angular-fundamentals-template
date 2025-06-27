@@ -11,7 +11,9 @@
         <span
           id="titleErrorMessage"
           class="text-danger"
-          *ngIf="courseForm.get('title')?.invalid && courseForm.get('title')?.touched"
+          [style.visibility]="
+            courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted) ? 'visible' : 'hidden'
+          "
           >Title is required.</span
         >
       </div>
@@ -29,7 +31,11 @@
         <span
           id="descriptionErrorMessage"
           class="text-danger"
-          *ngIf="courseForm.get('description')?.invalid && courseForm.get('description')?.touched"
+          [style.visibility]="
+            courseForm.get('description')?.invalid && (courseForm.get('description')?.touched || isSubmitted)
+              ? 'visible'
+              : 'hidden'
+          "
           >Description is required.</span
         >
       </div>
@@ -52,7 +58,11 @@
         <span
           id="durationErrorMessage"
           class="text-danger"
-          *ngIf="courseForm.get('duration')?.invalid && courseForm.get('duration')?.touched"
+          [style.visibility]="
+            courseForm.get('duration')?.invalid && (courseForm.get('duration')?.touched || isSubmitted)
+              ? 'visible'
+              : 'hidden'
+          "
           >Duration is required.</span
         >
       </div>
@@ -61,15 +71,23 @@
       <div class="form__control">
         <div class="course__flex course__authors__selector">
           <!--Use the name `author` for the form control.-->
-          <input type="text" id="author" placeholder="Input Author Name" formControlName="author" />
+          <input type="text" id="author" placeholder="Input Author Name" formControlName="newAuthor" />
           <app-button
             class="controll-button"
             id="createAuthor"
-            (click)="this.createAuthor(courseForm.get('author')?.value)"
+            (click)="this.createAuthor()"
             [buttonText]="'CREATE AUTHOR'"
           ></app-button>
         </div>
-        <span id="authorErrorMessage">New author should contain only latin letters and numbers.</span>
+        <span
+          id="authorErrorMessage"
+          [style.visibility]="
+            courseForm.get('newAuthor')?.invalid && (courseForm.get('newAuthor')?.touched || isSubmitted)
+              ? 'visible'
+              : 'hidden'
+          "
+          >New author should contain only latin letters and numbers.</span
+        >
         <div class="course__authors__section">
           <div class="course__authors">
             <h4>Authors List</h4>
@@ -77,7 +95,7 @@
             <ul class="course__authors__list" style="list-style: none">
               <li *ngFor="let author of courseForm.get('authors')?.value; let i = index" class="author-item">
                 <span>{{ author }}</span>
-                <app-button [iconName]="'plus'" [variant]="'outlined'"></app-button>
+                <app-button [iconName]="'plus'" [variant]="'outlined'" (click)="addAuthor(author)"></app-button>
                 <app-button [iconName]="'trash'" [variant]="'outlined'"></app-button>
               </li>
             </ul>
@@ -88,6 +106,7 @@
               <ul>
                 <li *ngFor="let author of courseForm.get('courseAuthors')?.value; let i = index">
                   {{ author }}
+                  <app-button [iconName]="'trash'" [variant]="'outlined'" (click)="removeAuthor(author)"></app-button>
                 </li>
               </ul>
             </ng-container>
