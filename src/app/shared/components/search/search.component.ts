@@ -15,15 +15,16 @@ export class SearchComponent {
   @Output() search = new EventEmitter<string>();
   @Output() valueChange = new EventEmitter<string>();
 
+  searchTerm: string = "";
+
   resetInput() {
     this.value = "";
     this.valueChange.emit(this.value);
   }
 
-  onSubmit(value: string) {
-    const searchValue = value;
+  onSubmit() {
     console.log("Search form submitted!");
-    this.search.emit(searchValue);
+    this.search.emit(this.searchTerm);
     this.resetInput();
   }
 }

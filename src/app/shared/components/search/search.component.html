@@ -1,5 +1,5 @@
 <div class="app-search">
-  <form #searchForm="ngForm" class="searchForm" (ngSubmit)="onSubmit(value || '')">
+  <form #searchForm="ngForm" [(ngModel)]="searchTerm" class="searchForm" (ngSubmit)="onSubmit()">
     <input
       type="text"
       class="search__input"
