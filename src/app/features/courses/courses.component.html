@@ -1,1 +1,9 @@
-<app-search [placeholder]="'Search course'" (search)="onSearch($event)"></app-search>
+<app-search #searchRef [placeholder]="'Search course'" [(value)]="searchQuery" (search)="onSearch($event)"></app-search>
+
+<app-courses-list
+  [courses]="coursesList"
+  [editable]="true"
+  (showCourse)="onShowCourse($event)"
+  (editCourse)="onEditCourse($event)"
+  (deleteCourse)="onDeleteCourse($event)"
+></app-courses-list>

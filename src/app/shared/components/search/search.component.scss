@@ -2,8 +2,17 @@
   display: flex;
   width: 100%;
   align-items: baseline;
+  justify-content: space-around;
 
   & input {
     margin-right: 24px;
+  }
+
+  .searchForm {
+    display: flex;
+  }
+
+  .search__input {
+    width: 955px;
   }
 }

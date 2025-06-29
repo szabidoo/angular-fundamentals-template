@@ -1,7 +1,14 @@
 <div class="app-search">
-  <form #searchForm="ngForm" (ngSubmit)="onSubmit(searchForm.value.input)">
-    <input type="text" placeholder="{{ placeholder || 'Input text' }}" ngModel name="input" />
-    <button type="submit" class="search-button">SEARCH</button>
-    <!-- <app-button [buttonText]="'SEARCH'" [type]="'submit'"></app-button> -->
+  <form #searchForm="ngForm" class="searchForm" (ngSubmit)="onSubmit(searchForm.value.input)">
+    <input
+      type="text"
+      class="search__input"
+      placeholder="{{ placeholder || 'Input text' }}"
+      ngModel
+      [(ngModel)]="value"
+      name="input"
+    />
+
+    <app-button [buttonText]="'SEARCH'" [type]="'submit'"></app-button>
   </form>
 </div>
