@@ -18,13 +18,13 @@ export class SearchComponent {
   searchTerm: string = "";
 
   resetInput() {
-    this.value = "";
+    this.searchTerm = "";
     this.valueChange.emit(this.value);
   }
 
   onSubmit() {
     console.log("Search form submitted!");
     this.search.emit(this.searchTerm);
-    // this.resetInput();
+    this.resetInput();
   }
 }
