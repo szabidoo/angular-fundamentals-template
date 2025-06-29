@@ -15,6 +15,7 @@ export class SearchComponent {
 
   onSubmit(value: string) {
     const searchValue = value || "";
+    console.log("Search form submitted!");
 
     this.search.emit(searchValue);
   }

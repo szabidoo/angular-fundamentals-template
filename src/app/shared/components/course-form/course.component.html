@@ -61,7 +61,7 @@
       <div class="form__control">
         <div class="course__flex course__authors__selector">
           <!--Use the name `author` for the form control.-->
-          <input type="text" id="author" placeholder="Input Author Name" formControlName="author" />
+          <input type="text" id="author" placeholder="Input Author Name" formControlName="newAuthor" />
           <app-button
             class="controll-button"
             id="createAuthor"
@@ -72,7 +72,7 @@
         </div>
         <span
           id="authorErrorMessage"
-          *ngIf="courseForm.get('author')?.invalid && (courseForm.get('author')?.touched || isSubmitted)"
+          *ngIf="courseForm.get('newAuthor')?.invalid && (courseForm.get('newAuthor')?.touched || isSubmitted)"
           >New author should contain only latin letters and numbers.</span
         >
         <div class="course__authors__section">

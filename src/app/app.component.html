@@ -71,7 +71,7 @@
   ></app-course-info>
 
   <!-- Search component -->
-  <app-search></app-search>
+  <app-search [placeholder]="'Search for courses...'" (search)="onSearch($event)"></app-search>
 
   <!-- Login Form component -->
   <app-login-form></app-login-form>
@@ -80,7 +80,7 @@
   <app-registration-form></app-registration-form>
 
   <!-- Course Form component -->
-  <app-course-form></app-course-form>
+  <app-course></app-course>
 
   <!-- Modal component -->
   <!-- <app-modal [message]="'Message'" [title]="'Title'" [okButtonText]="'Ok'" [cancelButtonText]="'Cancel'"></app-modal> -->

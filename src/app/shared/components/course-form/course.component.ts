@@ -6,9 +6,9 @@ import { mockedAuthorsList } from "@app/shared/mocks/mocks";
 import { Author } from "@app/shared/interfaces/author.interface";
 import { FormArray } from "@angular/forms";
 @Component({
-  selector: "app-course-form",
+  selector: "app-course",
   templateUrl: "./course.component.html",
-  styleUrls: ["./course-form.component.scss"],
+  styleUrls: ["./course.component.scss"],
 })
 export class CourseComponent implements OnInit {
   constructor(public fb: FormBuilder, public library: FaIconLibrary) {
@@ -25,7 +25,7 @@ export class CourseComponent implements OnInit {
     this.courseForm = this.fb.group({
       title: ["", [Validators.minLength(2), Validators.required]],
       description: ["", [Validators.minLength(2), Validators.required]],
-      author: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
+      newAuthor: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
       authors: this.fb.array(this.authorsNameList),
       courseAuthors: this.fb.array([], Validators.required),
       duration: [null, [Validators.required, Validators.min(0)]],
@@ -37,13 +37,9 @@ export class CourseComponent implements OnInit {
   }
 
   createAuthor(): void {
-    const author = this.courseForm.get("author")?.value;
+    const author = this.courseForm.get("newAuthor")?.value;
 
     if (!this.courseForm) return;
-
-    if (!author.length) {
-      return;
-    }
 
     if (this.authorsNameList.includes(author)) {
       alert("Author is already in Authors List");
@@ -54,7 +50,7 @@ export class CourseComponent implements OnInit {
     this.generateAuthorId();
 
     (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
-    this.courseForm.get("author")?.setValue("");
+    this.courseForm.get("newAuthor")?.setValue("");
   }
 
   addAuthor(author: string): void {

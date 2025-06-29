@@ -30,6 +30,10 @@ export class AppComponent {
     }));
   })();
 
+  onSearch(searchQuery: string) {
+    console.log("Searching for: ", searchQuery);
+  }
+
   toggleLogin(): void {
     this.isLoggedIn = !this.isLoggedIn;
   }
