@@ -1,5 +1,4 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { FormsModule } from "@angular/forms";
 
 @Component({
   selector: "app-search",
@@ -14,7 +13,7 @@ export class SearchComponent {
   @Output() search = new EventEmitter<string>();
 
   onSubmit(value: string) {
-    const searchValue = value || "";
+    const searchValue = value;
     console.log("Search form submitted!");
 
     this.search.emit(searchValue);
