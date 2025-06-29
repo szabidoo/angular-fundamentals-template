@@ -9,8 +9,6 @@ export class SearchComponent {
   // Use the name `placeholder` for the @Input.
   // Use the name `search` for the @Output.
 
-  @ViewChild("searchInput") searchInput!: ElementRef;
-  @Input() value?: string;
   @Input() placeholder?: string;
   @Output() search = new EventEmitter<string>();
   @Output() valueChange = new EventEmitter<string>();
@@ -19,7 +17,7 @@ export class SearchComponent {
 
   resetInput() {
     this.searchTerm = "";
-    this.valueChange.emit(this.value);
+    this.valueChange.emit(this.searchTerm);
   }
 
   onSubmit() {

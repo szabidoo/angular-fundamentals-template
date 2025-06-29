@@ -1,5 +1,4 @@
 import { Component, ViewChild } from "@angular/core";
-import { SearchComponent } from "@app/shared/components";
 import { Course } from "@app/shared/interfaces/course.interface";
 import { mockedCoursesList, mockedAuthorsList } from "@app/shared/mocks/mocks";
 
@@ -9,8 +8,6 @@ import { mockedCoursesList, mockedAuthorsList } from "@app/shared/mocks/mocks";
   styleUrls: ["./courses.component.scss"],
 })
 export class CoursesComponent {
-  @ViewChild("searchRef") searchRef!: SearchComponent;
-
   private allCourses: Course[] = (() => {
     return mockedCoursesList.map((course) => ({
       ...course,
