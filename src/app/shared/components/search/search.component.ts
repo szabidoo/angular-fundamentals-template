@@ -25,6 +25,6 @@ export class SearchComponent {
   onSubmit() {
     console.log("Search form submitted!");
     this.search.emit(this.searchTerm);
-    this.resetInput();
+    // this.resetInput();
   }
 }
