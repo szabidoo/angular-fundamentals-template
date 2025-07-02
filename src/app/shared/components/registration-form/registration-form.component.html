@@ -36,16 +36,22 @@
 
         <div class="form__control">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Input text" formControlName="password" />
-          <span
-            id="passwordErrorMessage"
-            class="text-danger"
-            *ngIf="
-              registrationForm.get('password')?.invalid && (registrationForm.get('password')?.touched || isSubmitted)
-            "
-          >
-            Password is required.
-          </span>
+          <div class="password-input-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="Input text"
+              formControlName="password"
+              appAttribute
+              #passwordToggle="togglePassword"
+            />
+            <app-button
+              [iconName]="passwordToggle.eyeIcon"
+              [variant]="'outlined'"
+              (click)="passwordToggle.togglePasswordVisibility()"
+              type="button"
+            ></app-button>
+          </div>
         </div>
       </div>
 
@@ -53,7 +59,9 @@
         <div class="form__action">
           <app-button [buttonText]="'REGISTRATION'" type="submit"></app-button>
         </div>
-        <div class="form__text">If you have an account you can <strong>Login</strong></div>
+        <div class="form__text">
+          If you have an account you can <strong><a routerLink="/login">Login</a></strong>
+        </div>
       </div>
     </div>
   </form>

@@ -10,11 +10,21 @@ import { CoursesService } from "@app/services/courses.service";
 import { CoursesModule } from "./features/courses/courses.module";
 import { CoursesListModule } from "./features/courses/courses-list/courses-list.module";
 import { CourseInfoModule } from "./features/course-info/course-info.module";
+import { Router, RouterModule } from "@angular/router";
+import { AppRoutingModule } from "./app-routing.module";
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, SharedModule, FontAwesomeModule, CoursesModule, CoursesListModule, CourseInfoModule],
-  providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService],
+  imports: [
+    BrowserModule,
+    SharedModule,
+    FontAwesomeModule,
+    CoursesModule,
+    CoursesListModule,
+    CourseInfoModule,
+    RouterModule.forRoot([]),
+  ],
+  providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService, AppRoutingModule],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

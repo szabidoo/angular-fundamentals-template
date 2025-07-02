@@ -25,17 +25,25 @@
           >
         </div>
         <div class="form__control">
-          <label for="password">Password</label>
-          <!--Use the name `password` for the form control.-->
-          <input
-            type="password"
-            id="password"
-            placeholder="Input text"
-            [(ngModel)]="password"
-            #passwordInput="ngModel"
-            name="password"
-            required
-          />
+          <div class="password-input-group">
+            <input
+              type="password"
+              id="password"
+              placeholder="Input text"
+              [(ngModel)]="password"
+              #passwordInput="ngModel"
+              name="password"
+              required
+              appAttribute
+              #passwordToggle="togglePassword"
+            />
+            <app-button
+              [iconName]="passwordToggle.eyeIcon"
+              [variant]="'outlined'"
+              (click)="passwordToggle.togglePasswordVisibility()"
+              type="button"
+            ></app-button>
+          </div>
           <span
             id="passwordErrorMessage"
             class="text-danger"
