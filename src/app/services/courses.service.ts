@@ -1,43 +1,87 @@
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable } from "@angular/core";
+import { catchError, Observable, tap } from "rxjs";
+import {
+  CreateCourse,
+  CourseResponse,
+  APICourse,
+  SingleCourseResponse,
+  EditCourse,
+} from "@app/shared/interfaces/course.interface";
+import { Author, AuthorResponse, SingleAuthorResponse } from "@app/shared/interfaces/author.interface";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class CoursesService {
-    getAll(): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  private http = inject(HttpClient);
+  private readonly API_BASE_URL = "http://localhost:4000/";
 
-    createCourse(course: any): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  getAll(): Observable<CourseResponse> {
+    // Add your code herea
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/all`);
+  }
 
-    editCourse(id: string, course: any): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  createCourse(course: CreateCourse): Observable<any> {
+    // replace 'any' with the required interface and remove 'void'
+    // Add your code here
+    return this.http.post<CourseResponse>(`${this.API_BASE_URL}courses/add`, course).pipe(
+      tap((response) => {
+        if (response.successful) {
+          console.log(`Course ${course.title} added`);
+        }
+      }),
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 
-    getCourse(id: string): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  editCourse(id: string, course: EditCourse): Observable<SingleCourseResponse> {
+    // replace 'any' with the required interface and remove 'void'
+    // Add your code here
+    return this.http.put<SingleCourseResponse>(`${this.API_BASE_URL}courses${id}`, course);
+  }
 
-    deleteCourse(id: string): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  getCourse(id: string): Observable<SingleCourseResponse> {
+    // replace 'any' with the required interface and remove 'void'
+    // Add your code here
+    return this.http.get<SingleCourseResponse>(`${this.API_BASE_URL}courses/${id}`).pipe(
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 
-    filterCourses(value: string): Observable<any> | void { // replace 'any' with the required interface and remove 'void'
-        // Add your code here
-    }
+  deleteCourse(id: string): Observable<any> {
+    // replace 'any' with the required interface
+    // Add your code here
+    return this.http.delete<any>(`${this.API_BASE_URL}courses/${id}`).pipe(
+      catchError((err) => {
+        throw err;
+      })
+    );
+  }
 
-    getAllAuthors() {
-        // Add your code here
-    }
+  filterCourses(value: string): Observable<CourseResponse> {
+    // replace 'any' with the required interface and remove 'void'
+    // Add your code here
 
-    createAuthor(name: string) {
-        // Add your code here
-    }
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, { params: { query: value } });
+  }
 
-    getAuthorById(id: string) {
-        // Add your code here
-    }
+  getAllAuthors() {
+    // Add your code here
+    return this.http.get<AuthorResponse>(`${this.API_BASE_URL}authors/all`);
+  }
+
+  createAuthor(name: string) {
+    // Add your code here
+    return this.http.post<SingleAuthorResponse>(`${this.API_BASE_URL}authors/add`, name);
+  }
+
+  getAuthorById(id: string) {
+    // Add your code here
+    return this.http.get<SingleAuthorResponse>(`${this.API_BASE_URL}authors/${id}`);
+  }
 }

@@ -32,10 +32,6 @@ export class CourseComponent implements OnInit {
     });
   }
 
-  generateAuthorId() {
-    return crypto.randomUUID();
-  }
-
   createAuthor(): void {
     const author = this.courseForm.get("newAuthor")?.value;
 
@@ -46,8 +42,6 @@ export class CourseComponent implements OnInit {
       return;
     }
     this.authorsNameList.push(author);
-
-    this.generateAuthorId();
 
     (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
     this.courseForm.get("newAuthor")?.setValue("");
