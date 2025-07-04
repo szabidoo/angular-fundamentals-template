@@ -2,6 +2,8 @@ import { RouterModule, Routes } from "@angular/router";
 import { LoginFormComponent, RegistrationFormComponent } from "./shared/components";
 import { AppComponent } from "./app.component";
 import { NgModule } from "@angular/core";
+import { AdminGuard } from "./user/guards/admin.guard";
+import { CoursesComponent } from "./features/courses/courses.component";
 
 export const routes: Routes = [
   /* Add your code here */
@@ -18,11 +20,13 @@ export const routes: Routes = [
       ),
   },
   {
-    path: "courses",
-    loadComponent: () => import("./features/courses/courses.component").then((m) => m.CoursesComponent),
+    path: "courses/add",
+    canActivate: [AdminGuard],
+    loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
   },
   {
-    path: "courses/add",
+    path: "courses/edit/:id",
+    canActivate: [AdminGuard],
     loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
   },
   {
@@ -30,10 +34,10 @@ export const routes: Routes = [
     loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
   },
   {
-    path: "courses/edit/:id",
-    loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
+    path: "courses",
+    component: CoursesComponent,
   },
-  { path: "", redirectTo: "courses", pathMatch: "full" },
+  { path: "", redirectTo: "/courses", pathMatch: "full" },
   { path: "**", redirectTo: "courses" },
 ];
 

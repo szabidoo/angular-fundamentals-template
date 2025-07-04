@@ -12,6 +12,7 @@ import { CoursesListModule } from "./features/courses/courses-list/courses-list.
 import { CourseInfoModule } from "./features/course-info/course-info.module";
 import { Router, RouterModule } from "@angular/router";
 import { AppRoutingModule } from "./app-routing.module";
+import { HttpClientModule } from "@angular/common/http";
 
 @NgModule({
   declarations: [AppComponent],
@@ -22,7 +23,9 @@ import { AppRoutingModule } from "./app-routing.module";
     CoursesModule,
     CoursesListModule,
     CourseInfoModule,
-    RouterModule.forRoot([]),
+    RouterModule,
+    HttpClientModule,
+    AppRoutingModule,
   ],
   providers: [AuthorizedGuard, NotAuthorizedGuard, CoursesService, CoursesStoreService, AppRoutingModule],
   bootstrap: [AppComponent],

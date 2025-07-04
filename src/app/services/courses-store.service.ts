@@ -1,6 +1,5 @@
 import { inject, Injectable } from "@angular/core";
 import {
-  APICourse,
   Course,
   CourseResponse,
   CreateCourse,
@@ -16,9 +15,9 @@ import { Author, AuthorResponse, SingleAuthorResponse } from "@app/shared/interf
 })
 export class CoursesStoreService {
   private isLoading$$ = new BehaviorSubject<boolean>(false);
-  private courses$$ = new BehaviorSubject<APICourse[]>([]);
+  private courses$$ = new BehaviorSubject<Course[]>([]);
   private authors$$ = new BehaviorSubject<Author[]>([]);
-  private coursesSerive = inject(CoursesService);
+  private coursesService = inject(CoursesService);
 
   get isLoading$() {
     return this.isLoading$$.asObservable();
@@ -32,24 +31,28 @@ export class CoursesStoreService {
     return this.authors$$.asObservable();
   }
 
-  getAll() {
-    // Add your code here
-    this.isLoading$$.next(true);
+  getAll(): void {
+    console.log("CoursesStoreService getAll() called");
+    console.log("About to call coursesService.getAll()");
 
-    return this.coursesSerive.getAll().pipe(
-      tap((response: CourseResponse) => {
-        this.courses$$.next(response.result);
-      }),
+    this.coursesService.getAll().subscribe({
+      next: (courses) => {
+        console.log("HTTP response received:", courses);
+        // Just pass the original courses with string author IDs
+        this.courses$$.next(courses.result);
 
-      catchError((err) => {
-        console.error(err);
-        throw err;
-      }),
-
-      finalize(() => {
-        this.isLoading$$.next(false);
-      })
-    );
+        // Optionally load author details if needed elsewhere
+        courses.result.forEach((course) => {
+          course.authors.forEach((authorId) => {
+            console.log("Author id: ", authorId);
+            this.getAuthorById(authorId).subscribe();
+          });
+        });
+      },
+      error: (error) => {
+        console.error("HTTP error:", error);
+      },
+    });
   }
 
   createCourse(course: CreateCourse) {
@@ -58,7 +61,7 @@ export class CoursesStoreService {
 
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.createCourse(course).pipe(
+    return this.coursesService.createCourse(course).pipe(
       tap((response: SingleCourseResponse) => {
         if (response.successful && response.result) {
           this.courses$$.next([...this.courses$$.value, response.result]);
@@ -80,7 +83,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.getCourse(id).pipe(
+    return this.coursesService.getCourse(id).pipe(
       catchError((err) => {
         console.error(err);
         throw err;
@@ -95,7 +98,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.editCourse(id, course).pipe(
+    return this.coursesService.editCourse(id, course).pipe(
       tap((response: SingleCourseResponse) => {
         if (response.successful && response.result) {
           const currentCourses = this.courses$$.value;
@@ -118,7 +121,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.deleteCourse(id).pipe(
+    return this.coursesService.deleteCourse(id).pipe(
       catchError((err) => {
         console.error(err);
         throw err;
@@ -134,7 +137,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.filterCourses(value).pipe(
+    return this.coursesService.filterCourses(value).pipe(
       tap((response: CourseResponse) => {
         if (response.successful && response.result) {
           this.courses$$.next(response.result);
@@ -156,7 +159,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.getAllAuthors().pipe(
+    return this.coursesService.getAllAuthors().pipe(
       tap((response: AuthorResponse) => {
         if (response.successful && response.result) {
           this.authors$$.next(response.result);
@@ -175,7 +178,7 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.createAuthor(name).pipe(
+    return this.coursesService.createAuthor(name).pipe(
       catchError((err) => {
         console.error(err);
         throw err;
@@ -188,11 +191,12 @@ export class CoursesStoreService {
     // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesSerive.getAuthorById(id).pipe(
+    return this.coursesService.getAuthorById(id).pipe(
       tap((response: SingleAuthorResponse) => {
         if (response.successful && response.result) {
           return response.result;
         }
+        return;
       }),
       catchError((err) => {
         console.error(err);

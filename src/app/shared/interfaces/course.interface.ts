@@ -1,25 +1,16 @@
 export interface Course {
-  id: string;
   title: string;
   description: string;
   creationDate: Date;
   duration: number;
   authors: string[];
-  editable: boolean;
-}
-
-export interface APICourse {
-  title: string;
-  description: string;
-  creationDate: string;
-  duration: number;
-  authors: string[];
   id: string;
+  editable?: boolean;
 }
 
 export interface CourseResponse {
   successful: boolean;
-  result: APICourse[];
+  result: Course[];
 }
 
 export interface EditCourse {
@@ -31,7 +22,7 @@ export interface EditCourse {
 
 export interface SingleCourseResponse {
   successful: boolean;
-  result: APICourse;
+  result: Course;
 }
 
 export interface CreateCourse {

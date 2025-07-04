@@ -14,24 +14,25 @@
 </app-header>
 
 <div class="app-root">
+  <router-outlet></router-outlet>
   <!-- Button component -->
 
-  <h3>Button component</h3>
+  <!-- <h3>Button component</h3>
 
   <app-button iconName="trash"></app-button>
-  <app-button buttonText="Show course"></app-button>
+  <app-button buttonText="Show course"></app-button> -->
 
   <!-- Info component -->
-
+  <!-- 
   <h3>Info component</h3>
 
   <app-info [title]="'Your List Is Empty'" [text]="'Please use ‘Add New Course’ button to add your first course'">
     <app-button buttonText="Add New Course"></app-button>
-  </app-info>
+  </app-info> -->
 
   <!-- Course Card component -->
 
-  <h3>Course Card Component</h3>
+  <!-- <h3>Course Card Component</h3>
   <app-course-card
     [title]="testCourse.title"
     [description]="testCourse.description"
@@ -43,11 +44,11 @@
   >
     <app-button iconName="trash"></app-button>
     <app-button iconName="pen"></app-button>
-  </app-course-card>
+  </app-course-card> -->
 
   <!-- Course list component -->
 
-  <h3>Course list Component</h3>
+  <!-- <h3>Course list Component</h3>
 
   <app-courses-list
     [courses]="coursesList"
@@ -55,11 +56,11 @@
     (showCourse)="onShowCourse($event)"
     (editCourse)="onEditCourse($event)"
     (deleteCourse)="onDeleteCourse($event)"
-  ></app-courses-list>
+  ></app-courses-list> -->
 
   <!-- Course info component -->
 
-  <h3>Course info Component</h3>
+  <!-- <h3>Course info Component</h3>
 
   <app-course-info
     [id]="testCourse.id"
@@ -68,23 +69,23 @@
     [creationDate]="testCourse.creationDate"
     [duration]="testCourse.duration"
     [authors]="testCourse.authors"
-  ></app-course-info>
+  ></app-course-info> -->
 
   <!-- Search component -->
-  <app-search [placeholder]="'Search for courses...'" (search)="onSearch($event)"></app-search>
+  <!-- <app-search [placeholder]="'Search for courses...'" (search)="onSearch($event)"></app-search> -->
 
   <!-- Login Form component -->
-  <app-login-form></app-login-form>
+  <!-- <app-login-form></app-login-form> -->
 
   <!-- Registration Form component -->
-  <app-registration-form></app-registration-form>
+  <!-- <app-registration-form></app-registration-form> -->
 
   <!-- Course Form component -->
-  <app-course></app-course>
+  <!-- <app-course></app-course> -->
 
-  <h3>Courses component</h3>
+  <!-- <h3>Courses component</h3> -->
 
-  <app-courses></app-courses>
+  <!-- <app-courses></app-courses> -->
 
   <!-- Modal component -->
   <!-- <app-modal [message]="'Message'" [title]="'Title'" [okButtonText]="'Ok'" [cancelButtonText]="'Cancel'"></app-modal> -->

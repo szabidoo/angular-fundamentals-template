@@ -4,7 +4,6 @@ import { catchError, Observable, tap } from "rxjs";
 import {
   CreateCourse,
   CourseResponse,
-  APICourse,
   SingleCourseResponse,
   EditCourse,
 } from "@app/shared/interfaces/course.interface";
@@ -18,7 +17,8 @@ export class CoursesService {
   private readonly API_BASE_URL = "http://localhost:4000/";
 
   getAll(): Observable<CourseResponse> {
-    // Add your code herea
+    // Add your code here
+    console.log("Courses Service called getAll()");
     return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/all`);
   }
 

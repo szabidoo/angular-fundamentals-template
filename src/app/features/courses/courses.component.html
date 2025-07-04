@@ -1,9 +1,17 @@
 <app-search [placeholder]="'Search course'" (search)="onSearch($event)"></app-search>
 
-<app-courses-list
-  [courses]="coursesList"
-  [editable]="true"
-  (showCourse)="onShowCourse($event)"
-  (editCourse)="onEditCourse($event)"
-  (deleteCourse)="onDeleteCourse($event)"
-></app-courses-list>
+<ng-container *ngIf="courses$ | async as courses">
+  <app-courses-list
+    *ngIf="courses.length > 0; else nocourse"
+    [courses]="courses"
+    [editable]="true"
+    (showCourse)="onShowCourse($event)"
+    (editCourse)="onEditCourse($event)"
+    (deleteCourse)="onDeleteCourse($event)"
+  ></app-courses-list>
+
+  <ng-template #nocourse>
+    <app-info [title]="'Your list is empty'" [text]="'Please use Add New Course button to add your first course.'">
+    </app-info>
+  </ng-template>
+</ng-container>

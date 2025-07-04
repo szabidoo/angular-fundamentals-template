@@ -1,29 +1,32 @@
-import { Component, ViewChild } from "@angular/core";
-import { Course } from "@app/shared/interfaces/course.interface";
+import { Component, inject, OnInit, ViewChild } from "@angular/core";
+import { CoursesStoreService } from "@app/services/courses-store.service";
+import { Course, CourseResponse } from "@app/shared/interfaces/course.interface";
 import { mockedCoursesList, mockedAuthorsList } from "@app/shared/mocks/mocks";
+import { Observable } from "rxjs";
+import { map, tap } from "rxjs/operators";
 
 @Component({
   selector: "app-courses",
   templateUrl: "./courses.component.html",
   styleUrls: ["./courses.component.scss"],
 })
-export class CoursesComponent {
-  private allCourses: Course[] = (() => {
-    return mockedCoursesList.map((course) => ({
-      ...course,
-      creationDate: new Date(course.creationDate),
-      authors: this.getAuthorNames(course.authors),
-      editable: true,
-    }));
-  })();
+export class CoursesComponent implements OnInit {
+  private coursesStore = inject(CoursesStoreService);
+  allCourses: Course[] = [];
+  courses$ = this.coursesStore.courses$;
+  private subscriptions: Observable<any>[] = [];
+
+  ngOnInit(): void {
+    this.coursesStore.getAll();
+  }
 
   searchQuery: string = "";
 
   coursesList: Course[] = [...this.allCourses];
 
-  getAuthorNames(authors: Course["authors"]): Course["authors"] {
-    return mockedAuthorsList.filter((author) => authors.includes(author.id)).map((author) => author.name);
-  }
+  // getAuthorNames(authors: Course["authors"]): Course["authors"] {
+  //   return mockedAuthorsList.filter((author) => authors.includes(author.id)).map((author) => author.name);
+  // }
 
   onShowCourse(id: Course["id"]): void {
     console.log("Clicked on course:", id);
