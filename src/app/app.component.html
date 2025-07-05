@@ -1,17 +1,18 @@
-<app-header>
-  <ng-container *ngIf="isLoggedIn; else loggedOut">
-    <span style="font-weight: bold">Harry Potter</span>
-    <div style="width: 120px" (click)="toggleLogin()">
-      <app-button buttonText="LOGOUT"></app-button>
-    </div>
-  </ng-container>
+<ng-container *ngIf="isAuthorized$ | async">
+  <app-header>
+    <ng-container>
+      <div style="width: 120px" (click)="toggleLogin()">
+        <app-button buttonText="LOGOUT" (click)="logout()"></app-button>
+      </div>
+    </ng-container>
 
-  <ng-template #loggedOut>
-    <div style="width: 120px" (click)="toggleLogin()">
-      <app-button buttonText="LOGIN"></app-button>
-    </div>
-  </ng-template>
-</app-header>
+    <!-- <ng-template #loggedOut>
+      <div style="width: 120px" (click)="toggleLogin()">
+        <app-button buttonText="LOGIN"></app-button>
+      </div>
+    </ng-template> -->
+  </app-header>
+</ng-container>
 
 <div class="app-root">
   <router-outlet></router-outlet>

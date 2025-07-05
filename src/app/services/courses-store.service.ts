@@ -6,7 +6,7 @@ import {
   EditCourse,
   SingleCourseResponse,
 } from "@app/shared/interfaces/course.interface";
-import { BehaviorSubject, catchError, finalize, tap, throwError } from "rxjs";
+import { BehaviorSubject, catchError, finalize, map, tap, switchMap, forkJoin, of } from "rxjs";
 import { CoursesService } from "./courses.service";
 import { Author, AuthorResponse, SingleAuthorResponse } from "@app/shared/interfaces/author.interface";
 
@@ -32,27 +32,41 @@ export class CoursesStoreService {
   }
 
   getAll(): void {
-    console.log("CoursesStoreService getAll() called");
-    console.log("About to call coursesService.getAll()");
+    this.isLoading$$.next(true);
 
-    this.coursesService.getAll().subscribe({
-      next: (courses) => {
-        console.log("HTTP response received:", courses);
-        // Just pass the original courses with string author IDs
-        this.courses$$.next(courses.result);
+    this.coursesService
+      .getAll()
+      .pipe(
+        switchMap((coursesResponse) => {
+          const courses = coursesResponse.result;
 
-        // Optionally load author details if needed elsewhere
-        courses.result.forEach((course) => {
-          course.authors.forEach((authorId) => {
-            console.log("Author id: ", authorId);
-            this.getAuthorById(authorId).subscribe();
-          });
-        });
-      },
-      error: (error) => {
-        console.error("HTTP error:", error);
-      },
-    });
+          const transformedCourses$ = courses.map((course) =>
+            forkJoin({
+              authors: forkJoin(
+                course.authors.map((authorId) =>
+                  this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
+                )
+              ),
+            }).pipe(
+              map(({ authors }) => ({
+                ...course,
+                authors,
+              }))
+            )
+          );
+
+          return forkJoin(transformedCourses$);
+        }),
+        finalize(() => this.isLoading$$.next(false))
+      )
+      .subscribe({
+        next: (transformedCourses) => {
+          this.courses$$.next(transformedCourses);
+        },
+        error: (error) => {
+          console.error(error);
+        },
+      });
   }
 
   createCourse(course: CreateCourse) {
@@ -192,11 +206,11 @@ export class CoursesStoreService {
     this.isLoading$$.next(true);
 
     return this.coursesService.getAuthorById(id).pipe(
-      tap((response: SingleAuthorResponse) => {
+      map((response: SingleAuthorResponse) => {
         if (response.successful && response.result) {
-          return response.result;
+          return response.result.name;
         }
-        return;
+        return "Unknown Author";
       }),
       catchError((err) => {
         console.error(err);

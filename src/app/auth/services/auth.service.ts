@@ -2,28 +2,8 @@ import { inject, Injectable } from "@angular/core";
 import { BehaviorSubject, catchError, Observable, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { SessionStorageService } from "./session-storage.service";
-
-interface LoginRequest {
-  name: string;
-  email: string;
-  password: string;
-}
-
-interface RegisterRequest {
-  name: string;
-  email: string;
-  password: string;
-  role: string;
-}
-
-interface AuthResponse {
-  successful: boolean;
-  result: string;
-  user?: {
-    name: string;
-    email: string;
-  };
-}
+import { LoginRequest, AuthResponse, RegisterRequest } from "../models/auth.interface";
+import { Router } from "@angular/router";
 
 @Injectable({
   providedIn: "root",
@@ -31,6 +11,7 @@ interface AuthResponse {
 export class AuthService {
   private sessionStorage = inject(SessionStorageService);
   private http = inject(HttpClient);
+  private router = inject(Router);
 
   private isAuthorized$$ = new BehaviorSubject<boolean>(false);
   isAuthorized$ = this.isAuthorized$$.asObservable();
@@ -75,7 +56,8 @@ export class AuthService {
     return this.http.post<AuthResponse>(`${this.API_BASE_URL}/register`, user).pipe(
       tap((response) => {
         if (response.successful && response.result) {
-          alert(response.result);
+          alert("Registration completed. You may log in now.");
+          this.router.navigate(["/login"]);
         }
       }),
       catchError((err) => {

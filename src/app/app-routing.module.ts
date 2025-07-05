@@ -4,39 +4,27 @@ import { AppComponent } from "./app.component";
 import { NgModule } from "@angular/core";
 import { AdminGuard } from "./user/guards/admin.guard";
 import { CoursesComponent } from "./features/courses/courses.component";
+import { AuthorizedGuard } from "./auth/guards/authorized.guard";
+import { NotAuthorizedGuard } from "./auth/guards/not-authorized.guard";
 
 export const routes: Routes = [
   /* Add your code here */
   {
     path: "login",
-    loadComponent: () =>
-      import("./shared/components/login-form/login-form.component").then((m) => m.LoginFormComponent),
+    canActivate: [NotAuthorizedGuard],
+    component: LoginFormComponent,
   },
   {
     path: "registration",
-    loadComponent: () =>
-      import("./shared/components/registration-form/registration-form.component").then(
-        (m) => m.RegistrationFormComponent
-      ),
-  },
-  {
-    path: "courses/add",
-    canActivate: [AdminGuard],
-    loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
-  },
-  {
-    path: "courses/edit/:id",
-    canActivate: [AdminGuard],
-    loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
-  },
-  {
-    path: "courses/:id",
-    loadComponent: () => import("./shared/components/course-form/course.component").then((m) => m.CourseComponent),
+    canActivate: [NotAuthorizedGuard],
+    component: RegistrationFormComponent,
   },
   {
     path: "courses",
-    component: CoursesComponent,
+    canLoad: [AuthorizedGuard],
+    loadChildren: () => import("./features/courses/courses.module").then((m) => m.CoursesModule),
   },
+
   { path: "", redirectTo: "/courses", pathMatch: "full" },
   { path: "**", redirectTo: "courses" },
 ];

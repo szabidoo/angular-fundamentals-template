@@ -14,6 +14,7 @@ export class CoursesComponent implements OnInit {
   private coursesStore = inject(CoursesStoreService);
   allCourses: Course[] = [];
   courses$ = this.coursesStore.courses$;
+
   private subscriptions: Observable<any>[] = [];
 
   ngOnInit(): void {
@@ -27,6 +28,8 @@ export class CoursesComponent implements OnInit {
   // getAuthorNames(authors: Course["authors"]): Course["authors"] {
   //   return mockedAuthorsList.filter((author) => authors.includes(author.id)).map((author) => author.name);
   // }
+
+  createCourse() {}
 
   onShowCourse(id: Course["id"]): void {
     console.log("Clicked on course:", id);

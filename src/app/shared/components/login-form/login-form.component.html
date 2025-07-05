@@ -25,6 +25,7 @@
           >
         </div>
         <div class="form__control">
+          <label for="password">Password</label>
           <div class="password-input-group">
             <input
               type="password"
@@ -56,7 +57,9 @@
         <div class="form__action">
           <app-button [buttonText]="'LOGIN'" type="submit"></app-button>
         </div>
-        <div class="form__text">If you don't have an account you may <strong>Registration</strong></div>
+        <div class="form__text">
+          If you don't have an account you may <strong><a routerLink="/registration">Registration</a></strong>
+        </div>
       </div>
     </div>
   </form>

@@ -20,7 +20,6 @@ import { HttpClientModule } from "@angular/common/http";
     BrowserModule,
     SharedModule,
     FontAwesomeModule,
-    CoursesModule,
     CoursesListModule,
     CourseInfoModule,
     RouterModule,

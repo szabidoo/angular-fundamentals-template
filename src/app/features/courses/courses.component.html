@@ -10,6 +10,8 @@
     (deleteCourse)="onDeleteCourse($event)"
   ></app-courses-list>
 
+  <app-button [buttonText]="'Add course'" (click)="createCourse()"></app-button>
+
   <ng-template #nocourse>
     <app-info [title]="'Your list is empty'" [text]="'Please use Add New Course button to add your first course.'">
     </app-info>
