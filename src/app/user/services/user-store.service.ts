@@ -1,6 +1,6 @@
 import { inject, Injectable } from "@angular/core";
 import { UserService } from "./user.service";
-import { BehaviorSubject, catchError, tap } from "rxjs";
+import { BehaviorSubject, catchError, Observable, tap } from "rxjs";
 import { UserResponse } from "@app/shared/interfaces/user.interface";
 
 @Injectable({
@@ -28,7 +28,11 @@ export class UserStoreService {
     );
   }
 
-  get isAdmin$() {
+  get name$(): Observable<string | null> {
+    return this.name$$.asObservable();
+  }
+
+  get isAdmin$(): Observable<boolean> {
     // Add your code here. Get isAdmin$$ value
     return this.isAdmin$$.asObservable();
   }

@@ -1,16 +1,20 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, inject, OnInit } from "@angular/core";
 import { FormBuilder, FormControl, FormGroup, Validators } from "@angular/forms";
 import { FaIconLibrary } from "@fortawesome/angular-fontawesome";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import { mockedAuthorsList } from "@app/shared/mocks/mocks";
 import { Author } from "@app/shared/interfaces/author.interface";
 import { FormArray } from "@angular/forms";
+import { CreateCourse } from "@app/shared/interfaces/course.interface";
+import { CoursesService } from "@app/services/courses.service";
 @Component({
   selector: "app-course",
   templateUrl: "./course.component.html",
   styleUrls: ["./course.component.scss"],
 })
 export class CourseComponent implements OnInit {
+  private coursesService = inject(CoursesService);
+
   constructor(public fb: FormBuilder, public library: FaIconLibrary) {
     library.addIconPacks(fas);
   }
@@ -30,6 +34,10 @@ export class CourseComponent implements OnInit {
       courseAuthors: this.fb.array([], Validators.required),
       duration: [null, [Validators.required, Validators.min(0)]],
     });
+  }
+
+  createCourse(course: CreateCourse) {
+    this.coursesService.createCourse(course);
   }
 
   createAuthor(): void {

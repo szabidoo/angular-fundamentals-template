@@ -22,7 +22,6 @@ export class LoginFormComponent {
       next: (response) => {
         if (response.successful) {
           console.log("Login successful: ", response);
-          this.router.navigate(["/courses"]);
         }
       },
     });

@@ -33,7 +33,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError((error: HttpErrorResponse) => {
-        if (error.status === 401) {
+        if (error.status === 401 && !req.url.includes("/logout")) {
           this.authService.logout().subscribe({
             next: () => {
               this.router.navigate(["/login"]);

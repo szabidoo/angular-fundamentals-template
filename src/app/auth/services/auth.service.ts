@@ -1,9 +1,10 @@
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, Observable, tap } from "rxjs";
+import { BehaviorSubject, catchError, Observable, of, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { SessionStorageService } from "./session-storage.service";
 import { LoginRequest, AuthResponse, RegisterRequest } from "../models/auth.interface";
 import { Router } from "@angular/router";
+import { UserStoreService } from "@app/user/services/user-store.service";
 
 @Injectable({
   providedIn: "root",
@@ -12,6 +13,7 @@ export class AuthService {
   private sessionStorage = inject(SessionStorageService);
   private http = inject(HttpClient);
   private router = inject(Router);
+  private userStore = inject(UserStoreService);
 
   private isAuthorized$$ = new BehaviorSubject<boolean>(false);
   isAuthorized$ = this.isAuthorized$$.asObservable();
@@ -25,6 +27,15 @@ export class AuthService {
         if (response.successful && response.result) {
           this.sessionStorage.setToken(response.result);
           this.isAuthorized$$.next(true);
+
+          this.userStore.getUser().subscribe({
+            next: () => {
+              this.router.navigate(["/courses"]);
+            },
+            error: (err) => {
+              console.log(err);
+            },
+          });
         }
       }),
       catchError((error) => {
@@ -37,17 +48,22 @@ export class AuthService {
   logout(): Observable<any> {
     // Add your code here
     const TOKEN = this.sessionStorage.getToken();
-    return this.http.delete(`${this.API_BASE_URL}/logout`, { body: TOKEN }).pipe(
-      tap(() => {
-        this.sessionStorage.deleteToken();
-        this.isAuthorized$$.next(false);
-      }),
-      catchError((err) => {
-        this.sessionStorage.deleteToken();
-        this.isAuthorized$$.next(false);
-        throw err;
+    return this.http
+      .delete(`${this.API_BASE_URL}/logout`, {
+        headers: { Authorization: `${TOKEN}` },
       })
-    );
+      .pipe(
+        tap(() => {
+          this.sessionStorage.deleteToken();
+          this.isAuthorized$$.next(false);
+        }),
+        catchError((err) => {
+          console.log("Logout failed, but clearing token anyway: ", err);
+          this.sessionStorage.deleteToken();
+          this.isAuthorized$$.next(false);
+          return of(null);
+        })
+      );
   }
 
   register(user: RegisterRequest): Observable<AuthResponse> {

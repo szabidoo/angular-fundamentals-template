@@ -4,6 +4,7 @@ import { Course } from "./shared/interfaces/course.interface";
 import { AuthService } from "./auth/services/auth.service";
 import { Router } from "@angular/router";
 import { Observable } from "rxjs";
+import { UserStoreService } from "./user/services/user-store.service";
 
 @Component({
   selector: "app-root",
@@ -15,14 +16,11 @@ export class AppComponent {
   isLoggedIn = false;
   private router = inject(Router);
   private authService = inject(AuthService);
+  private userStore = inject(UserStoreService);
   isAuthorized$: Observable<boolean> = this.authService.isAuthorized$;
-
+  name$ = this.userStore.name$;
   onSearch(searchQuery: string) {
     console.log("Searching for: ", searchQuery);
-  }
-
-  toggleLogin(): void {
-    this.isLoggedIn = !this.isLoggedIn;
   }
 
   logout() {
@@ -30,7 +28,7 @@ export class AppComponent {
       next: (response) => {
         alert("Logged out.");
         console.log("Logout: ", response);
-        this.router.navigate(["/login"]);
+        this.router.createUrlTree(["/login"]);
       },
     });
   }

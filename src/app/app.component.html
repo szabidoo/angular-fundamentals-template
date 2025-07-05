@@ -1,9 +1,8 @@
 <ng-container *ngIf="isAuthorized$ | async">
   <app-header>
     <ng-container>
-      <div style="width: 120px" (click)="toggleLogin()">
-        <app-button buttonText="LOGOUT" (click)="logout()"></app-button>
-      </div>
+      <span>{{ (name$ | async) || "Admin" }} </span>
+      <app-button buttonText="LOGOUT" (click)="logout()"></app-button>
     </ng-container>
 
     <!-- <ng-template #loggedOut>
