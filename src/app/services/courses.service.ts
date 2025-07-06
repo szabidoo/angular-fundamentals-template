@@ -40,7 +40,7 @@ export class CoursesService {
   editCourse(id: string, course: EditCourse): Observable<SingleCourseResponse> {
     // replace 'any' with the required interface and remove 'void'
     // Add your code here
-    return this.http.put<SingleCourseResponse>(`${this.API_BASE_URL}courses${id}`, course);
+    return this.http.put<SingleCourseResponse>(`${this.API_BASE_URL}courses/${id}`, course);
   }
 
   getCourse(id: string): Observable<SingleCourseResponse> {
@@ -67,7 +67,7 @@ export class CoursesService {
     // replace 'any' with the required interface and remove 'void'
     // Add your code here
 
-    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, { params: { query: value } });
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, { params: { value } });
   }
 
   getAllAuthors() {

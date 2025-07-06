@@ -106,8 +106,9 @@
 
       <div class="form__action">
         <app-button [buttonText]="'cancel'" class="form__action__cancel button__small controll-button"></app-button>
+
         <app-button
-          [buttonText]="'create course'"
+          [buttonText]="courseID ? 'update course' : 'create course'"
           class="form__action__create-course controll-button"
           [type]="'submit'"
         ></app-button>

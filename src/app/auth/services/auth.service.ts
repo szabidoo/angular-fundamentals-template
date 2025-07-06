@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, Observable, of, tap } from "rxjs";
+import { BehaviorSubject, catchError, Observable, of, switchMap, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { SessionStorageService } from "./session-storage.service";
 import { LoginRequest, AuthResponse, RegisterRequest } from "../models/auth.interface";
@@ -28,7 +28,7 @@ export class AuthService {
           this.sessionStorage.setToken(response.result);
           this.isAuthorized$$.next(true);
 
-          this.userStore.getUser().subscribe({
+          return this.userStore.getUser().subscribe({
             next: () => {
               this.router.navigate(["/courses"]);
             },
@@ -36,6 +36,8 @@ export class AuthService {
               console.log(err);
             },
           });
+        } else {
+          return of(response);
         }
       }),
       catchError((error) => {

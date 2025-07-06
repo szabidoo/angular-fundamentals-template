@@ -2,21 +2,24 @@ import { NgModule } from "@angular/core";
 import { RouterModule, Routes } from "@angular/router";
 import { CoursesComponent } from "./courses.component";
 import { AdminGuard } from "@app/user/guards/admin.guard";
+import { CourseComponent } from "@app/shared/components";
+import { CourseInfoComponent } from "../course-info/course-info.component";
+
 const routes: Routes = [
   { path: "", component: CoursesComponent },
   {
     path: "add",
-    canLoad: [AdminGuard],
-    loadComponent: () => import("@shared/components/course-form/course.component").then((m) => m.CourseComponent),
+    component: CourseComponent,
+    canActivate: [AdminGuard],
   },
   {
     path: "edit/:id",
-    canLoad: [AdminGuard],
-    loadComponent: () => import("@shared/components/course-form/course.component").then((m) => m.CourseComponent),
+    component: CourseComponent,
+    canActivate: [AdminGuard],
   },
   {
     path: ":id",
-    loadComponent: () => import("../course-info/course-info.component").then((m) => m.CourseInfoComponent),
+    component: CourseInfoComponent,
   },
 ];
 

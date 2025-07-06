@@ -7,8 +7,12 @@ import { UserResponse } from "@app/shared/interfaces/user.interface";
   providedIn: "root",
 })
 export class UserStoreService {
-  private name$$ = new BehaviorSubject<string | null>("");
   private isAdmin$$ = new BehaviorSubject<boolean>(false);
+  private name$$ = new BehaviorSubject<string>("");
+
+  public isAdmin$ = this.isAdmin$$.asObservable();
+  public name$ = this.name$$.asObservable();
+
   private userSerice = inject(UserService);
 
   getUser() {
@@ -16,7 +20,9 @@ export class UserStoreService {
     return this.userSerice.getUser().pipe(
       tap((response: UserResponse) => {
         if (response.successful && response.result) {
-          this.name$$.next(response.result.name);
+          if (response.result.name) {
+            this.name$$.next(response.result.name);
+          }
 
           this.isAdmin = response.result.role === "admin";
         }
@@ -26,15 +32,6 @@ export class UserStoreService {
         throw err;
       })
     );
-  }
-
-  get name$(): Observable<string | null> {
-    return this.name$$.asObservable();
-  }
-
-  get isAdmin$(): Observable<boolean> {
-    // Add your code here. Get isAdmin$$ value
-    return this.isAdmin$$.asObservable();
   }
 
   set isAdmin(value: boolean) {

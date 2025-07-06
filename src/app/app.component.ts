@@ -28,7 +28,7 @@ export class AppComponent {
       next: (response) => {
         alert("Logged out.");
         console.log("Logout: ", response);
-        this.router.createUrlTree(["/login"]);
+        this.router.navigate(["/login"]);
       },
     });
   }

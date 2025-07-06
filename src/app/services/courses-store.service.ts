@@ -98,11 +98,32 @@ export class CoursesStoreService {
     this.isLoading$$.next(true);
 
     return this.coursesService.getCourse(id).pipe(
+      switchMap((courseResponse: SingleCourseResponse) => {
+        if (courseResponse.successful && courseResponse.result) {
+          const course = courseResponse.result;
+
+          return forkJoin({
+            authors: forkJoin(
+              course.authors.map((authorId) =>
+                this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
+              )
+            ),
+          }).pipe(
+            map(({ authors }) => ({
+              ...courseResponse,
+              result: {
+                ...course,
+                authors,
+              },
+            }))
+          );
+        }
+        return of(courseResponse);
+      }),
       catchError((err) => {
         console.error(err);
         throw err;
       }),
-
       finalize(() => this.isLoading$$.next(false))
     );
   }

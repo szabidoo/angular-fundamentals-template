@@ -7,6 +7,9 @@ import { Author } from "@app/shared/interfaces/author.interface";
 import { FormArray } from "@angular/forms";
 import { CreateCourse } from "@app/shared/interfaces/course.interface";
 import { CoursesService } from "@app/services/courses.service";
+import { CoursesStoreService } from "@app/services/courses-store.service";
+import { ActivatedRoute, Router } from "@angular/router";
+
 @Component({
   selector: "app-course",
   templateUrl: "./course.component.html",
@@ -14,25 +17,94 @@ import { CoursesService } from "@app/services/courses.service";
 })
 export class CourseComponent implements OnInit {
   private coursesService = inject(CoursesService);
+  private coursesStore = inject(CoursesStoreService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  courseID: string | null = this.route.snapshot.paramMap.get("id");
 
   constructor(public fb: FormBuilder, public library: FaIconLibrary) {
     library.addIconPacks(fas);
+    // Inicializálj egy üres form-ot, hogy a template ne hibázzon
+    this.initEmptyForm();
   }
+
   courseForm!: FormGroup;
-  // Use the names `title`, `description`, `author`, 'authors' (for authors list), `duration` for the form controls.
-
-  authorsNameList: Author["name"][] = mockedAuthorsList.map((auth) => auth.name);
+  authorsNameList: Author["name"][] = [];
   courseAuthorsNameList: Author["name"][] = [];
-
   isSubmitted: boolean = false;
+
   ngOnInit(): void {
+    // Először az authors-öket töltsd be, majd inicializáld a form-ot
+    this.coursesStore.getAllAuthors().subscribe((authors) => {
+      this.authorsNameList = authors.result.map((author) => author.name);
+      // Authors betöltése után inicializáld a form-ot
+      this.initCourseForm();
+    });
+  }
+
+  // Üres form inicializálása a constructor-ban
+  private initEmptyForm(): void {
     this.courseForm = this.fb.group({
       title: ["", [Validators.minLength(2), Validators.required]],
       description: ["", [Validators.minLength(2), Validators.required]],
       newAuthor: ["", [Validators.minLength(2), Validators.pattern(/^[a-zA-Z0-9 ]+$/)]],
-      authors: this.fb.array(this.authorsNameList),
+      authors: this.fb.array([]),
       courseAuthors: this.fb.array([], Validators.required),
       duration: [null, [Validators.required, Validators.min(0)]],
+    });
+  }
+
+  initCourseForm() {
+    if (this.courseID) {
+      // Get course data and set initial values
+      this.coursesService.getCourse(this.courseID).subscribe((course) => {
+        const courseData = course.result;
+
+        // Frissítsd a meglévő form-ot
+        this.courseForm.patchValue({
+          title: courseData?.title || "",
+          description: courseData?.description || "",
+          duration: courseData?.duration || null,
+        });
+
+        // Authors FormArray-ek újraépítése
+        this.rebuildAuthorsFormArrays(courseData?.authors || []);
+      });
+    } else {
+      // Create mode - csak a FormArray-eket építsd újra
+      this.rebuildAuthorsFormArrays([]);
+    }
+  }
+
+  private rebuildAuthorsFormArrays(courseAuthors: any[]): void {
+    // Authors FormArray újraépítése
+    const authorsArray = this.courseForm.get("authors") as FormArray;
+    authorsArray.clear();
+    this.authorsNameList.forEach((authorName) => {
+      authorsArray.push(this.fb.control(authorName));
+    });
+
+    // Course Authors beállítása
+    if (courseAuthors.length > 0) {
+      this.courseAuthorsNameList = courseAuthors.map((author) => (typeof author === "string" ? author : author.name));
+
+      // Távolítsd el a course authors-öket az available authors-ből
+      this.authorsNameList = this.authorsNameList.filter(
+        (authorName) => !this.courseAuthorsNameList.includes(authorName)
+      );
+
+      // Authors FormArray újraépítése a szűrt listával
+      authorsArray.clear();
+      this.authorsNameList.forEach((authorName) => {
+        authorsArray.push(this.fb.control(authorName));
+      });
+    }
+
+    // Course Authors FormArray újraépítése
+    const courseAuthorsArray = this.courseForm.get("courseAuthors") as FormArray;
+    courseAuthorsArray.clear();
+    this.courseAuthorsNameList.forEach((authorName) => {
+      courseAuthorsArray.push(this.fb.control(authorName));
     });
   }
 
@@ -41,7 +113,7 @@ export class CourseComponent implements OnInit {
   }
 
   createAuthor(): void {
-    const author = this.courseForm.get("newAuthor")?.value;
+    const author: string = this.courseForm.get("newAuthor")?.value;
 
     if (!this.courseForm) return;
 
@@ -50,6 +122,8 @@ export class CourseComponent implements OnInit {
       return;
     }
     this.authorsNameList.push(author);
+
+    this.coursesStore.createAuthor(author).subscribe();
 
     (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
     this.courseForm.get("newAuthor")?.setValue("");
@@ -88,7 +162,15 @@ export class CourseComponent implements OnInit {
     this.isSubmitted = true;
 
     if (this.courseForm.valid) {
-      console.log(this.courseForm.value);
+      const course = this.courseForm.value;
+
+      if (this.courseID) {
+        this.coursesStore.editCourse(this.courseID, course);
+      } else {
+        this.coursesStore.createCourse(course);
+      }
+
+      this.router.navigate(["/courses"]);
     }
 
     console.log("Form submitted.");

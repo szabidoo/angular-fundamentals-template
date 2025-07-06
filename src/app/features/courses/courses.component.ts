@@ -1,68 +1,64 @@
-import { Component, inject, OnInit, ViewChild } from "@angular/core";
-import { AuthService } from "@app/auth/services/auth.service";
+import { Component, inject, OnDestroy, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
 import { CoursesStoreService } from "@app/services/courses-store.service";
-import { Course, CourseResponse } from "@app/shared/interfaces/course.interface";
-import { mockedCoursesList, mockedAuthorsList } from "@app/shared/mocks/mocks";
+import { Course } from "@app/shared/interfaces/course.interface";
 import { UserStoreService } from "@app/user/services/user-store.service";
-import { Observable } from "rxjs";
-import { map, tap } from "rxjs/operators";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-courses",
   templateUrl: "./courses.component.html",
   styleUrls: ["./courses.component.scss"],
 })
-export class CoursesComponent implements OnInit {
+export class CoursesComponent implements OnInit, OnDestroy {
   private coursesStore = inject(CoursesStoreService);
   private userStore = inject(UserStoreService);
-  allCourses: Course[] = [];
+  private router = inject(Router);
+
   courses$ = this.coursesStore.courses$;
+  isLoading$ = this.coursesStore.isLoading$;
   isEditable = this.userStore.isAdmin$;
 
-  private subscriptions: Observable<any>[] = [];
+  private subscriptions = new Subscription();
+  searchQuery: string = "";
 
   ngOnInit(): void {
     this.coursesStore.getAll();
 
-    console.log(this.isEditable);
+    this.userStore.isAdmin$.subscribe((isadmin) => {
+      console.log("Is admin: ", isadmin);
+    });
+
+    this.userStore.getUser();
   }
 
-  searchQuery: string = "";
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
 
-  coursesList: Course[] = [...this.allCourses];
-
-  // getAuthorNames(authors: Course["authors"]): Course["authors"] {
-  //   return mockedAuthorsList.filter((author) => authors.includes(author.id)).map((author) => author.name);
-  // }
-
-  createCourse() {}
+  createCourse(): void {
+    this.router.navigate(["/courses/add"]);
+  }
 
   onShowCourse(id: Course["id"]): void {
-    console.log("Clicked on course:", id);
+    this.router.navigate(["/courses", id]);
   }
 
   onEditCourse(id: Course["id"]): void {
-    console.log("Editing course:", id);
+    this.router.navigate(["/courses/edit", id]);
   }
 
   onDeleteCourse(id: Course["id"]): void {
-    console.log("Delete course:", id);
+    if (confirm("Are you sure you want to delete this course?")) {
+      this.coursesStore.deleteCourse(id);
+    }
   }
 
-  // onSearch(searchTerm: string) {
-  //   console.log("Searching for: ", searchTerm);
-
-  //   if (!searchTerm || searchTerm.trim() === "") {
-  //     this.coursesList = [...this.allCourses];
-  //   } else {
-  //     this.coursesList = this.allCourses.filter(
-  //       (course) =>
-  //         course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //         course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  //         course.authors.some((author) => author.toLowerCase().includes(searchTerm.toLowerCase()))
-  //     );
-
-  //     this.searchQuery = "";
-  //   }
-  // }
+  onSearch(searchTerm: string): void {
+    if (!searchTerm || searchTerm.trim() === "") {
+      this.coursesStore.getAll();
+    } else {
+      this.coursesStore.filterCourses(searchTerm);
+    }
+  }
 }
