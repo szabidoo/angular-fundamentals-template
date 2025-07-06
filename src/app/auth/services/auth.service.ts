@@ -29,9 +29,11 @@ export class AuthService {
           this.isAuthorized$$.next(true);
 
           return this.userStore.getUser().subscribe({
-            next: () => {
-              debounceTime(300);
-              this.router.navigate(["/courses"]);
+            next: (response) => {
+              if (response) {
+                console.log("Login response: ", response);
+                this.router.navigate(["/courses"]);
+              }
             },
             error: (err) => {
               console.log(err);

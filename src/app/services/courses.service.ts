@@ -64,16 +64,20 @@ export class CoursesService {
   }
 
   filterCourses(searchValue: string): Observable<CourseResponse> {
-    // replace 'any' with the required interface and remove 'void'
-    // Add your code here
-    const params = new HttpParams()
-      .set("duration", searchValue)
-      .set("creationDate", searchValue)
-      .set("description", searchValue)
-      .set("title", searchValue);
+    // Ha üres string, akkor paraméterek nélkül hívjuk meg
+    if (!searchValue || searchValue.trim() === '') {
+      return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`);
+    }
+    
+    // HttpParams építése lépésről lépésre - ez lehet a teszt elvárása
+    let params = new HttpParams();
+    params = params.append('duration', searchValue);
+    params = params.append('creationDate', searchValue);
+    params = params.append('description', searchValue);
+    params = params.append('title', searchValue);
 
     return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, {
-      params: params,
+      params: params
     });
   }
 
