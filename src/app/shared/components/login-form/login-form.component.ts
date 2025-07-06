@@ -16,21 +16,33 @@ export class LoginFormComponent {
 
   email!: string;
   password!: string;
-  isLoading = false; // Loading state hozzáadása
+  isLoading = false;
 
   login(user: LoginRequest) {
+    if (this.isLoading) return;
+
     this.isLoading = true;
 
     this.authService.login(user).subscribe({
       next: (response) => {
         if (response.successful) {
-          console.log("Login successful: ", response);
+          console.log("Login successful, navigating...");
 
           setTimeout(() => {
-            this.router.navigate(["/courses"]);
-            this.isLoading = false;
-          }, 500);
+            this.router.navigate(["/courses"]).then(
+              (success) => {
+                console.log("Navigation success:", success);
+                this.isLoading = false;
+              },
+              (error) => {
+                console.error("Navigation error:", error);
+                this.isLoading = false;
+                window.location.href = "/courses";
+              }
+            );
+          }, 200);
         } else {
+          console.error("Login was not successful");
           this.isLoading = false;
         }
       },
@@ -42,7 +54,7 @@ export class LoginFormComponent {
   }
 
   onSubmit(form: NgForm) {
-    if (this.isLoading) return; // Megakadályozza a dupla submit-et
+    if (this.isLoading) return;
 
     Object.values(form.controls).forEach((control) => {
       control.markAsTouched();

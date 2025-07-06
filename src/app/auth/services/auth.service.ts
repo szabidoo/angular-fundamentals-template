@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, debounceTime, Observable, of, switchMap, tap } from "rxjs";
+import { BehaviorSubject, catchError, map, Observable, of, switchMap, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { SessionStorageService } from "./session-storage.service";
 import { LoginRequest, AuthResponse, RegisterRequest } from "../models/auth.interface";
@@ -20,37 +20,35 @@ export class AuthService {
   private readonly API_BASE_URL = "http://localhost:4000";
 
   login(user: LoginRequest): Observable<AuthResponse> {
-    // replace 'any' with the required interface
-    // Add your code here
     return this.http.post<AuthResponse>(`${this.API_BASE_URL}/login`, user).pipe(
-      tap((response) => {
+      switchMap((response) => {
         if (response.successful && response.result) {
           this.sessionStorage.setToken(response.result);
           this.isAuthorized$$.next(true);
 
-          return this.userStore.getUser().subscribe({
-            next: (response) => {
-              if (response.result) {
-                console.log("Login response: ", response);
-              }
-            },
-            error: (err) => {
-              console.log(err);
-            },
-          });
+          return this.userStore.getUser().pipe(
+            map((userResponse: any) => {
+              console.log("User data loaded after login:", userResponse);
+              return response;
+            }),
+            catchError((userError) => {
+              console.error("Error loading user data:", userError);
+              return of(response);
+            })
+          );
         } else {
           return of(response);
         }
       }),
       catchError((error) => {
-        console.error("Login failed: ", error), this.isAuthorized$$.next(false);
+        console.error("Login failed:", error);
+        this.isAuthorized$$.next(false);
         throw error;
       })
     );
   }
 
   logout(): Observable<any> {
-    // Add your code here
     const TOKEN = this.sessionStorage.getToken();
     return this.http
       .delete(`${this.API_BASE_URL}/logout`, {
@@ -71,8 +69,6 @@ export class AuthService {
   }
 
   register(user: RegisterRequest): Observable<AuthResponse> {
-    // replace 'any' with the required interface
-    // Add your code here
     return this.http.post<AuthResponse>(`${this.API_BASE_URL}/register`, user).pipe(
       tap((response) => {
         if (response.successful && response.result) {
@@ -88,16 +84,12 @@ export class AuthService {
   }
 
   get isAuthorised(): boolean {
-    // Add your code here. Get isAuthorized$$ value
     return this.isAuthorized$$.value;
   }
 
   set isAuthorised(value: boolean) {
-    // Add your code here. Change isAuthorized$$ value
     this.isAuthorized$$.next(value);
   }
 
-  getLoginUrl() {
-    // Add your code here
-  }
+  getLoginUrl() {}
 }

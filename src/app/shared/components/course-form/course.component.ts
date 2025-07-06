@@ -37,10 +37,10 @@ export class CourseComponent implements OnInit {
 
   ngOnInit(): void {
     this.coursesStore.getAllAuthors().subscribe((authors) => {
-      console.log("Authors response:", authors); // Debug log
-      this.authors = authors.result; // Ez már a teljes Author objektumok tömbje
-      this.authorsNameList = authors.result.map((author) => author.name); // Kivesszük a neveket
-      console.log("Authors names:", this.authorsNameList); // Debug log
+      console.log("Authors response:", authors);
+      this.authors = authors.result;
+      this.authorsNameList = authors.result.map((author) => author.name);
+      console.log("Authors names:", this.authorsNameList);
       this.initCourseForm();
     });
   }
@@ -158,12 +158,26 @@ export class CourseComponent implements OnInit {
       alert("Author is already in Authors List");
       return;
     }
-    this.authorsNameList.push(author);
 
-    this.coursesStore.createAuthor(author).subscribe();
+    this.coursesStore.createAuthor(author).subscribe({
+      next: (response) => {
+        console.log("Author created successfully:", response);
 
-    (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
-    this.courseForm.get("newAuthor")?.setValue("");
+        // Frissítjük az authors listát a backend-ről
+        this.coursesStore.getAllAuthors().subscribe((authors) => {
+          this.authors = authors.result; // Frissítjük a teljes authors listát ID-kkal együtt
+          this.authorsNameList.push(author); // Hozzáadjuk a lokális listához is
+
+          // Hozzáadjuk a FormArray-hez
+          (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
+          this.courseForm.get("newAuthor")?.setValue("");
+        });
+      },
+      error: (error) => {
+        console.error("Error creating author:", error);
+        alert("Failed to create author");
+      },
+    });
   }
 
   addAuthor(authorName: string): void {
