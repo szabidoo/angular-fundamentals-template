@@ -31,6 +31,7 @@ export class LoginFormComponent {
     Object.values(form.controls).forEach((control) => {
       control.markAsTouched();
     });
+
     this.login(form.value);
   }
 }

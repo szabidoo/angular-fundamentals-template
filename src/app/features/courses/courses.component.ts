@@ -50,15 +50,26 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   onDeleteCourse(id: Course["id"]): void {
     if (confirm("Are you sure you want to delete this course?")) {
-      this.coursesStore.deleteCourse(id);
+      const deleteSubscription = this.coursesStore.deleteCourse(id).subscribe({
+        next: () => {
+          console.log("Course deleted successfully");
+          this.coursesStore.getAll(); // Refresh the courses list
+        },
+        error: (error) => {
+          console.error("Error deleting course:", error);
+        },
+      });
+      this.subscriptions.add(deleteSubscription);
     }
   }
 
-  onSearch(searchTerm: string): void {
-    if (!searchTerm || searchTerm.trim() === "") {
-      this.coursesStore.getAll();
+  onSearch(searchQuery: string) {
+    console.log("Searching for: ", searchQuery);
+
+    if (searchQuery && searchQuery.trim()) {
+      this.coursesStore.filterCourses(searchQuery.trim());
     } else {
-      this.coursesStore.filterCourses(searchTerm);
+      this.coursesStore.getAll();
     }
   }
 }

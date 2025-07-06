@@ -28,6 +28,6 @@ export interface SingleCourseResponse {
 export interface CreateCourse {
   title: string;
   description: string;
-  duration: string;
+  duration: number;
   authors: string[];
 }
