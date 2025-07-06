@@ -70,9 +70,6 @@ export class CoursesStoreService {
   }
 
   createCourse(course: CreateCourse) {
-    // replace 'any' with the required interface
-    // Add your code here
-
     this.isLoading$$.next(true);
 
     return this.coursesService.createCourse(course).pipe(
@@ -94,7 +91,6 @@ export class CoursesStoreService {
   }
 
   getCourse(id: string) {
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.getCourse(id).pipe(
@@ -129,8 +125,6 @@ export class CoursesStoreService {
   }
 
   editCourse(id: string, course: EditCourse) {
-    // replace 'any' with the required interface
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.editCourse(id, course).pipe(
@@ -153,7 +147,6 @@ export class CoursesStoreService {
   }
 
   deleteCourse(id: string) {
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.deleteCourse(id).pipe(
@@ -169,29 +162,70 @@ export class CoursesStoreService {
   }
 
   filterCourses(value: string) {
-    // Add your code here
     this.isLoading$$.next(true);
 
-    return this.coursesService.filterCourses(value).pipe(
-      tap((response: CourseResponse) => {
-        if (response.successful && response.result) {
-          this.courses$$.next(response.result);
-        }
-      }),
+    if (!value || value.trim() === "") {
+      this.getAll();
+      this.isLoading$$.next(false);
+      return this.courses$;
+    }
 
-      catchError((err) => {
-        console.error(err);
-        throw err;
-      }),
+    this.coursesService
+      .getAll()
+      .pipe(
+        switchMap((coursesResponse) => {
+          const courses = coursesResponse.result;
 
-      finalize(() => {
-        this.isLoading$$.next(false);
-      })
-    );
+          const transformedCourses$ = courses.map((course) =>
+            forkJoin({
+              authors: forkJoin(
+                course.authors.map((authorId) =>
+                  this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
+                )
+              ),
+            }).pipe(
+              map(({ authors }) => ({
+                ...course,
+                authors,
+              }))
+            )
+          );
+
+          return forkJoin(transformedCourses$);
+        }),
+        map((transformedCourses) => {
+          const searchTerm = value.toLowerCase().trim();
+
+          const filteredCourses = transformedCourses.filter((course) => {
+            return (
+              course.title.toLowerCase().includes(searchTerm) ||
+              course.description.toLowerCase().includes(searchTerm) ||
+              course.duration.toString().includes(searchTerm) ||
+              course.creationDate.toString().toLowerCase().includes(searchTerm) ||
+              course.authors.some((author: string) => author.toLowerCase().includes(searchTerm))
+            );
+          });
+
+          return filteredCourses;
+        }),
+        tap((filteredCourses) => {
+          console.log("Filtered courses:", filteredCourses);
+          this.courses$$.next(filteredCourses);
+        }),
+        catchError((err) => {
+          console.error(err);
+          throw err;
+        }),
+        finalize(() => {
+          this.isLoading$$.next(false);
+        })
+      )
+      .subscribe();
+
+    return this.courses$;
   }
 
   getAllAuthors() {
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.getAllAuthors().pipe(
@@ -210,7 +244,6 @@ export class CoursesStoreService {
   }
 
   createAuthor(name: string) {
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.createAuthor(name).pipe(
@@ -223,7 +256,6 @@ export class CoursesStoreService {
   }
 
   getAuthorById(id: string) {
-    // Add your code here
     this.isLoading$$.next(true);
 
     return this.coursesService.getAuthorById(id).pipe(

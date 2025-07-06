@@ -1,4 +1,4 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { catchError, Observable, tap } from "rxjs";
 import {
@@ -66,8 +66,15 @@ export class CoursesService {
   filterCourses(searchValue: string): Observable<CourseResponse> {
     // replace 'any' with the required interface and remove 'void'
     // Add your code here
+    const params = new HttpParams()
+      .set("duration", searchValue)
+      .set("creationDate", searchValue)
+      .set("description", searchValue)
+      .set("title", searchValue);
 
-    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter?value=${searchValue}`);
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, {
+      params: params,
+    });
   }
 
   getAllAuthors() {

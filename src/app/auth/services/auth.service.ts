@@ -1,5 +1,5 @@
 import { inject, Injectable } from "@angular/core";
-import { BehaviorSubject, catchError, Observable, of, switchMap, tap } from "rxjs";
+import { BehaviorSubject, catchError, debounceTime, Observable, of, switchMap, tap } from "rxjs";
 import { HttpClient } from "@angular/common/http";
 import { SessionStorageService } from "./session-storage.service";
 import { LoginRequest, AuthResponse, RegisterRequest } from "../models/auth.interface";
@@ -30,6 +30,7 @@ export class AuthService {
 
           return this.userStore.getUser().subscribe({
             next: () => {
+              debounceTime(300);
               this.router.navigate(["/courses"]);
             },
             error: (err) => {
