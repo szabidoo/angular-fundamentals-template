@@ -63,11 +63,11 @@ export class CoursesService {
     );
   }
 
-  filterCourses(value: string): Observable<CourseResponse> {
+  filterCourses(searchValue: string): Observable<CourseResponse> {
     // replace 'any' with the required interface and remove 'void'
     // Add your code here
 
-    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, { params: { value } });
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter?value=${searchValue}`);
   }
 
   getAllAuthors() {

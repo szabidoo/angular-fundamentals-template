@@ -19,9 +19,6 @@ export class AppComponent {
   private userStore = inject(UserStoreService);
   isAuthorized$: Observable<boolean> = this.authService.isAuthorized$;
   name$ = this.userStore.name$;
-  onSearch(searchQuery: string) {
-    console.log("Searching for: ", searchQuery);
-  }
 
   logout() {
     this.authService.logout().subscribe({

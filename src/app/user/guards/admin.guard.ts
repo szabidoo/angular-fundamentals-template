@@ -7,16 +7,19 @@ import { UserStoreService } from "../services/user-store.service";
   providedIn: "root",
 })
 export class AdminGuard implements CanActivate {
-  // Add your code here
   private userStore = inject(UserStoreService);
   private router = inject(Router);
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    // Null check hozzáadása
+    if (!this.userStore.isAdmin$) {
+      console.error("isAdmin$ is undefined in UserStoreService");
+      return this.router.createUrlTree(["/courses"]);
+    }
+
     return this.userStore.isAdmin$.pipe(
       map((isAdmin) => {
+        console.log("AdminGuard - isAdmin:", isAdmin);
         if (isAdmin) {
           return true;
         } else {

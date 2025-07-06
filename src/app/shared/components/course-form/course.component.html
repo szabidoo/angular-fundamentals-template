@@ -105,7 +105,12 @@
       </div>
 
       <div class="form__action">
-        <app-button [buttonText]="'cancel'" class="form__action__cancel button__small controll-button"></app-button>
+        <app-button
+          [buttonText]="'cancel'"
+          [type]="'button'"
+          (click)="onCancel()"
+          class="form__action__cancel button__small controll-button"
+        ></app-button>
 
         <app-button
           [buttonText]="courseID ? 'update course' : 'create course'"
