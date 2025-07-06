@@ -30,9 +30,8 @@ export class AuthService {
 
           return this.userStore.getUser().subscribe({
             next: (response) => {
-              if (response) {
+              if (response.result) {
                 console.log("Login response: ", response);
-                this.router.navigate(["/courses"]);
               }
             },
             error: (err) => {

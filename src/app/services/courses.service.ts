@@ -53,10 +53,10 @@ export class CoursesService {
     );
   }
 
-  deleteCourse(id: string): Observable<any> {
+  deleteCourse(id: string): Observable<SingleCourseResponse> {
     // replace 'any' with the required interface
     // Add your code here
-    return this.http.delete<any>(`${this.API_BASE_URL}courses/${id}`).pipe(
+    return this.http.delete<SingleCourseResponse>(`${this.API_BASE_URL}courses/${id}`).pipe(
       catchError((err) => {
         throw err;
       })
@@ -68,12 +68,15 @@ export class CoursesService {
       return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`);
     }
 
-    // HttpParams építése lépésről lépésre - ez lehet a teszt elvárása
+    const params = new HttpParams()
+      .set("duration", searchValue)
+      .set("creationDate", searchValue)
+      .set("description", searchValue)
+      .set("title", searchValue);
 
-    return this.http.get<CourseResponse>(
-      `${this.API_BASE_URL}courses/filter?duration=${searchValue}&creationDate=${searchValue}&description=${searchValue}&title=${searchValue}`,
-      {}
-    );
+    return this.http.get<CourseResponse>(`${this.API_BASE_URL}courses/filter`, {
+      params: params,
+    });
   }
 
   getAllAuthors() {
@@ -83,7 +86,7 @@ export class CoursesService {
 
   createAuthor(name: string) {
     // Add your code here
-    return this.http.post<SingleAuthorResponse>(`${this.API_BASE_URL}authors/add`, name);
+    return this.http.post<SingleAuthorResponse>(`${this.API_BASE_URL}authors/add`, { name });
   }
 
   getAuthorById(id: string) {

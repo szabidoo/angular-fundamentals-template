@@ -11,27 +11,45 @@ import { AuthService } from "@app/auth/services/auth.service";
 })
 export class LoginFormComponent {
   @ViewChild("loginForm") public loginForm!: NgForm;
-  //Use the names `email` and `password` for form controls.
   private authService = inject(AuthService);
   private router = inject(Router);
+
   email!: string;
   password!: string;
+  isLoading = false; // Loading state hozzáadása
 
   login(user: LoginRequest) {
+    this.isLoading = true;
+
     this.authService.login(user).subscribe({
       next: (response) => {
         if (response.successful) {
           console.log("Login successful: ", response);
+
+          setTimeout(() => {
+            this.router.navigate(["/courses"]);
+            this.isLoading = false;
+          }, 500);
+        } else {
+          this.isLoading = false;
         }
+      },
+      error: (error) => {
+        console.error("Login error:", error);
+        this.isLoading = false;
       },
     });
   }
 
   onSubmit(form: NgForm) {
+    if (this.isLoading) return; // Megakadályozza a dupla submit-et
+
     Object.values(form.controls).forEach((control) => {
       control.markAsTouched();
     });
 
-    this.login(form.value);
+    if (form.valid) {
+      this.login(form.value);
+    }
   }
 }

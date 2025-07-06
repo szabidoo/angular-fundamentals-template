@@ -83,7 +83,6 @@
               <li *ngFor="let author of courseForm.get('authors')?.value; let i = index" class="author-item">
                 <span>{{ author }}</span>
                 <app-button [iconName]="'plus'" [variant]="'outlined'" (click)="addAuthor(author)"></app-button>
-                <app-button [iconName]="'trash'" [variant]="'outlined'"></app-button>
               </li>
             </ul>
           </div>
