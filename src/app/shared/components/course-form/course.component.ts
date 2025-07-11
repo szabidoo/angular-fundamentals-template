@@ -7,6 +7,7 @@ import { FormArray } from "@angular/forms";
 import { CreateCourse } from "@app/shared/interfaces/course.interface";
 import { CoursesService } from "@app/services/courses.service";
 import { CoursesStoreService } from "@app/services/courses-store.service";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { ActivatedRoute, Router } from "@angular/router";
 
 @Component({
@@ -31,6 +32,7 @@ export class CourseComponent implements OnInit {
 
   private coursesService = inject(CoursesService);
   private coursesStore = inject(CoursesStoreService);
+  private coursesFacade = inject(CoursesStateFacade);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   courseID: string | null = this.route.snapshot.paramMap.get("id");
@@ -58,25 +60,29 @@ export class CourseComponent implements OnInit {
 
   initCourseForm() {
     if (this.courseID) {
-      this.coursesService.getCourse(this.courseID).subscribe((course) => {
-        const courseData = course.result;
+      this.coursesFacade.getSingleCourse(this.courseID);
 
-        this.courseForm.patchValue({
-          title: courseData?.title || "",
-          description: courseData?.description || "",
-          duration: courseData?.duration || null,
-        });
+      this.coursesFacade.course$.subscribe((courseResponse) => {
+        if (courseResponse) {
+          const courseData = courseResponse;
 
-        const courseAuthorsWithNames = (courseData?.authors || [])
-          .map((authorId: string) => {
-            const foundAuthor = this.authors.find((a) => a.id === authorId);
-            return foundAuthor ? foundAuthor.name : null;
-          })
-          .filter((name): name is string => name !== null);
+          this.courseForm.patchValue({
+            title: courseData?.title || "",
+            description: courseData?.description || "",
+            duration: courseData?.duration || null,
+          });
 
-        console.log("Course authors converted to names:", courseAuthorsWithNames);
+          const courseAuthorsWithNames = (courseData?.authors || [])
+            .map((authorId: string) => {
+              const foundAuthor = this.authors.find((a) => a.id === authorId);
+              return foundAuthor ? foundAuthor.name : null;
+            })
+            .filter((name): name is string => name !== null);
 
-        this.rebuildAuthorsFormArrays(courseAuthorsWithNames);
+          console.log("Course authors converted to names:", courseAuthorsWithNames);
+
+          this.rebuildAuthorsFormArrays(courseAuthorsWithNames);
+        }
       });
     } else {
       this.rebuildAuthorsFormArrays([]);
@@ -84,69 +90,33 @@ export class CourseComponent implements OnInit {
   }
 
   private rebuildAuthorsFormArrays(courseAuthors: string[]): void {
-    const authorsArray = this.courseForm.get("authors") as FormArray;
-    authorsArray.clear();
-    this.authorsNameList.forEach((authorName) => {
-      authorsArray.push(this.fb.control(authorName));
+    const authorsFormArray = this.courseForm.get("authors") as FormArray;
+    const courseAuthorsFormArray = this.courseForm.get("courseAuthors") as FormArray;
+
+    authorsFormArray.clear();
+    courseAuthorsFormArray.clear();
+
+    this.courseAuthorsNameList = [...courseAuthors];
+
+    courseAuthors.forEach((authorName) => {
+      courseAuthorsFormArray.push(this.fb.control(authorName));
     });
 
-    if (courseAuthors.length > 0) {
-      // Most már csak stringek (nevek) vannak
-      this.courseAuthorsNameList = courseAuthors;
+    this.courseAuthorsIds = courseAuthors
+      .map((authorName) => {
+        const foundAuthor = this.authors.find((a) => a.name === authorName);
+        return foundAuthor ? foundAuthor.id : null;
+      })
+      .filter((id): id is string => id !== null);
 
-      // ID-k megkeresése a nevekhez
-      this.courseAuthorsIds = courseAuthors
-        .map((authorName) => {
-          const foundAuthor = this.authors.find((a) => a.name === authorName);
-          return foundAuthor ? foundAuthor.id : "";
-        })
-        .filter((id) => id !== "");
-
-      // Szűrés
-      this.authorsNameList = this.authorsNameList.filter(
-        (authorName) => !this.courseAuthorsNameList.includes(authorName)
-      );
-
-      // FormArray újraépítése
-      authorsArray.clear();
-      this.authorsNameList.forEach((authorName) => {
-        authorsArray.push(this.fb.control(authorName));
-      });
-    }
-
-    // Course Authors FormArray
-    const courseAuthorsArray = this.courseForm.get("courseAuthors") as FormArray;
-    courseAuthorsArray.clear();
-    this.courseAuthorsNameList.forEach((authorName) => {
-      courseAuthorsArray.push(this.fb.control(authorName));
-    });
+    console.log("Course authors IDs:", this.courseAuthorsIds);
   }
 
   createCourse(course: CreateCourse) {
     console.log("Creating course:", course);
     console.log("Request payload:", JSON.stringify(course, null, 2));
 
-    this.coursesService.createCourse(course).subscribe({
-      next: (response) => {
-        console.log("Course created successfully:", response);
-        this.router.navigate(["/courses"]);
-      },
-      error: (error) => {
-        console.error("Error creating course:", error);
-        console.error("Error status:", error.status);
-        console.error("Error message:", error.message);
-
-        if (error.error) {
-          console.error("Server error object:", error.error);
-          if (error.error.errors && Array.isArray(error.error.errors)) {
-            console.error("Server validation errors:");
-            error.error.errors.forEach((err: any, index: number) => {
-              console.error(`Error ${index + 1}:`, err);
-            });
-          }
-        }
-      },
-    });
+    this.coursesFacade.createCourse(course);
   }
 
   createAuthor(): void {
@@ -163,12 +133,10 @@ export class CourseComponent implements OnInit {
       next: (response) => {
         console.log("Author created successfully:", response);
 
-        // Frissítjük az authors listát a backend-ről
         this.coursesStore.getAllAuthors().subscribe((authors) => {
-          this.authors = authors.result; // Frissítjük a teljes authors listát ID-kkal együtt
-          this.authorsNameList.push(author); // Hozzáadjuk a lokális listához is
+          this.authors = authors.result;
+          this.authorsNameList.push(author);
 
-          // Hozzáadjuk a FormArray-hez
           (this.courseForm.get("authors") as FormArray).push(this.fb.control(author));
           this.courseForm.get("newAuthor")?.setValue("");
         });
@@ -181,18 +149,19 @@ export class CourseComponent implements OnInit {
   }
 
   addAuthor(authorName: string): void {
-    const index = this.authorsNameList.findIndex((item) => item === authorName);
+    if (!this.courseAuthorsNameList.includes(authorName)) {
+      this.courseAuthorsNameList.push(authorName);
 
-    if (index !== -1) {
-      const author = this.authors.find((a) => a.name === authorName);
-      if (author) {
-        (this.courseForm.get("courseAuthors") as FormArray).push(this.fb.control(authorName));
-        this.courseAuthorsNameList.push(authorName);
-        this.courseAuthorsIds.push(author.id);
-
-        (this.courseForm.get("authors") as FormArray).removeAt(index);
-        this.authorsNameList = this.authorsNameList.filter((item) => item !== authorName);
+      const foundAuthor = this.authors.find((a) => a.name === authorName);
+      if (foundAuthor) {
+        this.courseAuthorsIds.push(foundAuthor.id);
       }
+
+      const courseAuthorsFormArray = this.courseForm.get("courseAuthors") as FormArray;
+      courseAuthorsFormArray.push(this.fb.control(authorName));
+
+      console.log("Added author:", authorName);
+      console.log("Updated course authors IDs:", this.courseAuthorsIds);
     }
   }
 
@@ -201,15 +170,23 @@ export class CourseComponent implements OnInit {
   }
 
   removeAuthor(authorName: string): void {
-    const index = this.courseAuthorsNameList.findIndex((item) => item === authorName);
+    const index = this.courseAuthorsNameList.indexOf(authorName);
+    if (index > -1) {
+      this.courseAuthorsNameList.splice(index, 1);
 
-    if (index !== -1) {
-      (this.courseForm.get("authors") as FormArray).push(this.fb.control(authorName));
-      this.authorsNameList.push(authorName);
+      const foundAuthor = this.authors.find((a) => a.name === authorName);
+      if (foundAuthor) {
+        const idIndex = this.courseAuthorsIds.indexOf(foundAuthor.id);
+        if (idIndex > -1) {
+          this.courseAuthorsIds.splice(idIndex, 1);
+        }
+      }
 
-      (this.courseForm.get("courseAuthors") as FormArray).removeAt(index);
-      this.courseAuthorsNameList = this.courseAuthorsNameList.filter((item) => item !== authorName);
-      this.courseAuthorsIds.splice(index, 1);
+      const courseAuthorsFormArray = this.courseForm.get("courseAuthors") as FormArray;
+      courseAuthorsFormArray.removeAt(index);
+
+      console.log("Removed author:", authorName);
+      console.log("Updated course authors IDs:", this.courseAuthorsIds);
     }
   }
 
@@ -251,39 +228,11 @@ export class CourseComponent implements OnInit {
 
       if (this.courseID) {
         console.log("Editing course with ID:", this.courseID);
-        this.coursesStore.editCourse(this.courseID, course).subscribe({
-          next: (response) => {
-            console.log("Course updated successfully:", response);
-            this.router.navigate(["/courses"]);
-          },
-          error: (error) => {
-            console.error("Error updating course:", error);
-            if (error.error && error.error.errors) {
-              console.error("Server validation errors:", error.error.errors);
-            }
-          },
-        });
+        this.coursesFacade.editCourse(course, this.courseID);
       } else {
         console.log("Creating new course");
         this.createCourse(course);
       }
-    } else {
-      console.log("Form is invalid:", this.courseForm.errors);
-
-      Object.keys(this.courseForm.controls).forEach((key) => {
-        const control = this.courseForm.get(key);
-        if (control && control.errors) {
-          console.error(`${key} validation errors:`, control.errors);
-        }
-        control?.markAsTouched();
-      });
-
-      if (this.courseAuthorsNameList.length === 0) {
-        console.error("No authors selected");
-        alert("Please select at least one author");
-      }
     }
-
-    console.log("Form submitted.");
   }
 }

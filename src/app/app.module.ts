@@ -14,6 +14,10 @@ import { Router, RouterModule } from "@angular/router";
 import { AppRoutingModule } from "./app-routing.module";
 import { HTTP_INTERCEPTORS, HttpClientModule } from "@angular/common/http";
 import { TokenInterceptor } from "./auth/interceptors/token.interceptor";
+import { StoreModule } from "@ngrx/store";
+import { effects, reducers } from "./store";
+import { EffectsModule } from "@ngrx/effects";
+import { CoursesStateFacade } from "./store/courses/courses.facade";
 
 @NgModule({
   declarations: [AppComponent],
@@ -26,12 +30,15 @@ import { TokenInterceptor } from "./auth/interceptors/token.interceptor";
     RouterModule,
     HttpClientModule,
     AppRoutingModule,
+    StoreModule.forRoot(reducers),
+    EffectsModule.forRoot(effects),
   ],
   providers: [
     AuthorizedGuard,
     NotAuthorizedGuard,
     CoursesService,
     CoursesStoreService,
+    CoursesStateFacade,
     AppRoutingModule,
     {
       provide: HTTP_INTERCEPTORS,

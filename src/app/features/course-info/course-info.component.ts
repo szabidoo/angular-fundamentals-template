@@ -1,6 +1,7 @@
 import { Component, Input, OnInit, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
-import { CoursesStoreService } from "@app/services/courses-store.service";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
+
 @Component({
   selector: "app-course-info",
   templateUrl: "./course-info.component.html",
@@ -16,20 +17,23 @@ export class CourseInfoComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private coursesStore = inject(CoursesStoreService);
+  private coursesFacade = inject(CoursesStateFacade);
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get("id");
     if (id) {
-      this.coursesStore.getCourse(id).subscribe({
-        next: (response) => {
-          const course = response.result;
-          this.id = course.id;
-          this.title = course.title;
-          this.description = course.description;
-          this.creationDate = course.creationDate;
-          this.duration = course.duration;
-          this.authors = course.authors;
+      this.coursesFacade.getSingleCourse(id);
+
+      this.coursesFacade.course$.subscribe({
+        next: (course) => {
+          if (course) {
+            this.id = course.id;
+            this.title = course.title;
+            this.description = course.description;
+            this.creationDate = course.creationDate;
+            this.duration = course.duration;
+            this.authors = course.authors;
+          }
         },
       });
     }
@@ -37,7 +41,6 @@ export class CourseInfoComponent implements OnInit {
 
   goBack(): void {
     console.log("Back button clicked!");
-
     this.router.navigate(["/courses"]);
   }
 }

@@ -1,45 +1,54 @@
 // @ts-nocheck
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Injectable } from "@angular/core";
+import { Store, select } from "@ngrx/store";
+import { Observable } from "rxjs";
+import { Course } from "@app/shared/interfaces/course.interface";
+import * as CoursesActions from "./courses.actions";
+import * as CoursesSelectors from "./courses.selectors";
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: "root",
 })
 export class CoursesStateFacade {
-    isAllCoursesLoading$: Observable<boolean>;
-    isSingleCourseLoading$: Observable<boolean>;
-    isSearchingState$: Observable<boolean>;
-    courses$: Observable<any[]>;
-    allCourses$: Observable<any[]>;
-    course$: Observable<any>;
-    errorMessage$: Observable<string>;
+  isAllCoursesLoading$: Observable<boolean>;
+  isSingleCourseLoading$: Observable<boolean>;
+  isSearchingState$: Observable<boolean>;
+  courses$: Observable<Course[]>;
+  allCourses$: Observable<Course[]>;
+  course$: Observable<Course>;
+  errorMessage$: Observable<string>;
 
+  constructor(private store: Store) {
+    this.isAllCoursesLoading$ = this.store.pipe(select(CoursesSelectors.isAllCoursesLoadingSelector));
+    this.isSingleCourseLoading$ = this.store.pipe(select(CoursesSelectors.isSingleCourseLoadingSelector));
+    this.isSearchingState$ = this.store.pipe(select(CoursesSelectors.isSearchingStateSelector));
+    this.courses$ = this.store.pipe(select(CoursesSelectors.getAllCourses));
+    this.allCourses$ = this.store.pipe(select(CoursesSelectors.getAllCourses));
+    this.course$ = this.store.pipe(select(CoursesSelectors.getCourse));
+    this.errorMessage$ = this.store.pipe(select(CoursesSelectors.getErrorMessage));
+  }
 
-    constructor() {
-        // Add your code here
-    }
+  getAllCourses(): void {
+    this.store.dispatch(CoursesActions.requestAllCourses());
+  }
 
-    getAllCourses(): void {
-        // Add your code here
-    }
+  getSingleCourse(id: string): void {
+    this.store.dispatch(CoursesActions.requestSingleCourse({ id }));
+  }
 
-    getSingleCourse(id: string): void {
-        // Add your code here
-    }
+  getFilteredCourses(searchValue: string): void {
+    this.store.dispatch(CoursesActions.requestFilteredCourses({ title: searchValue }));
+  }
 
-    getFilteredCourses(searchValue: string): void {
-        // Add your code here
-    }
+  editCourse(body: CreateCourse, id: string): void {
+    this.store.dispatch(CoursesActions.requestEditCourse({ id, course: body }));
+  }
 
-    editCourse(body: any, id: string): void {
-        // Add your code here
-    }
+  createCourse(body: CreateCourse): void {
+    this.store.dispatch(CoursesActions.requestCreateCourse({ course: body }));
+  }
 
-    createCourse(body: any): void {
-        // Add your code here
-    }
-
-    deleteCourse(id: string): void {
-        // Add your code here
-    }
+  deleteCourse(id: string): void {
+    this.store.dispatch(CoursesActions.requestDeleteCourse({ id }));
+  }
 }

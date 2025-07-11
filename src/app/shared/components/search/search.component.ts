@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output, ViewChild, ElementRef, inject } from "@angular/core";
-import { CoursesStoreService } from "@app/services/courses-store.service";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 
 @Component({
   selector: "app-search",
@@ -14,7 +14,7 @@ export class SearchComponent {
   @Output() search = new EventEmitter<string>();
   @Output() valueChange = new EventEmitter<string>();
 
-  private coursesStore = inject(CoursesStoreService);
+  private coursesFacade = inject(CoursesStateFacade);
 
   searchTerm: string = "";
 
@@ -26,12 +26,11 @@ export class SearchComponent {
   onSubmit() {
     console.log("Search form submitted!");
 
-    this.coursesStore.filterCourses(this.searchTerm).subscribe({
-      next: (response) => {
-        console.log("Search results: ", response);
-      },
-      error: (err) => console.error("Search error: ", err),
-    });
+    if (this.searchTerm && this.searchTerm.trim()) {
+      this.coursesFacade.getFilteredCourses(this.searchTerm.trim());
+    } else {
+      this.coursesFacade.getAllCourses();
+    }
 
     this.search.emit(this.searchTerm);
     this.resetInput();

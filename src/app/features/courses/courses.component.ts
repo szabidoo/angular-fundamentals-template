@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { CoursesStoreService } from "@app/services/courses-store.service";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { Course } from "@app/shared/interfaces/course.interface";
 import { UserStoreService } from "@app/user/services/user-store.service";
 import { Subscription } from "rxjs";
@@ -11,19 +11,19 @@ import { Subscription } from "rxjs";
   styleUrls: ["./courses.component.scss"],
 })
 export class CoursesComponent implements OnInit, OnDestroy {
-  private coursesStore = inject(CoursesStoreService);
+  private coursesFacade = inject(CoursesStateFacade);
   private userStore = inject(UserStoreService);
   private router = inject(Router);
 
-  courses$ = this.coursesStore.courses$;
-  isLoading$ = this.coursesStore.isLoading$;
+  courses$ = this.coursesFacade.courses$;
+  isLoading$ = this.coursesFacade.isAllCoursesLoading$;
   isEditable = this.userStore.isAdmin$;
 
   private subscriptions = new Subscription();
   searchQuery: string = "";
 
   ngOnInit(): void {
-    this.coursesStore.getAll();
+    this.coursesFacade.getAllCourses();
 
     this.userStore.isAdmin$.subscribe((isadmin) => {
       console.log("Is admin: ", isadmin);
@@ -50,16 +50,11 @@ export class CoursesComponent implements OnInit, OnDestroy {
 
   onDeleteCourse(id: Course["id"]): void {
     if (confirm("Are you sure you want to delete this course?")) {
-      const deleteSubscription = this.coursesStore.deleteCourse(id).subscribe({
-        next: () => {
-          console.log("Course deleted successfully");
-          this.coursesStore.getAll(); // Refresh the courses list
-        },
-        error: (error) => {
-          console.error("Error deleting course:", error);
-        },
-      });
-      this.subscriptions.add(deleteSubscription);
+      this.coursesFacade.deleteCourse(id);
+      // Refresh courses after deletion
+      setTimeout(() => {
+        this.coursesFacade.getAllCourses();
+      }, 500);
     }
   }
 
@@ -67,9 +62,9 @@ export class CoursesComponent implements OnInit, OnDestroy {
     console.log("Searching for: ", searchQuery);
 
     if (searchQuery && searchQuery.trim()) {
-      this.coursesStore.filterCourses(searchQuery.trim());
+      this.coursesFacade.getFilteredCourses(searchQuery.trim());
     } else {
-      this.coursesStore.getAll();
+      this.coursesFacade.getAllCourses();
     }
   }
 }
