@@ -1,7 +1,8 @@
 import { Component, inject, OnDestroy, OnInit } from "@angular/core";
 import { Router } from "@angular/router";
-import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 import { Course } from "@app/shared/interfaces/course.interface";
+import { CoursesStateFacade } from "@app/store/courses/courses.facade";
+import { UserStateFacade } from "@app/store/user/user.facade";
 import { UserStoreService } from "@app/user/services/user-store.service";
 import { Subscription } from "rxjs";
 
@@ -12,12 +13,13 @@ import { Subscription } from "rxjs";
 })
 export class CoursesComponent implements OnInit, OnDestroy {
   private coursesFacade = inject(CoursesStateFacade);
+  private userFacade = inject(UserStateFacade);
   private userStore = inject(UserStoreService);
   private router = inject(Router);
 
   courses$ = this.coursesFacade.courses$;
   isLoading$ = this.coursesFacade.isAllCoursesLoading$;
-  isEditable = this.userStore.isAdmin$;
+  isEditable$ = this.userFacade.isAdmin$;
 
   private subscriptions = new Subscription();
   searchQuery: string = "";

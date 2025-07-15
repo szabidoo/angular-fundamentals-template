@@ -8,12 +8,13 @@
         <label for="title">Title</label>
         <!--Use the name `title` for the form control.-->
         <input type="text" id="title" placeholder="Input text" formControlName="title" />
-        <span
-          id="titleErrorMessage"
-          class="text-danger"
-          *ngIf="courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted)"
-          >Title is required.</span
-        >
+      </div>
+      <!-- Title hibaüzenet -->
+      <div
+        class="error-message"
+        *ngIf="courseForm.get('title')?.invalid && (courseForm.get('title')?.touched || isSubmitted)"
+      >
+        Title is required.
       </div>
       <div class="form__control">
         <label for="description">Description</label>
@@ -80,13 +81,13 @@
             <h4>Authors List</h4>
             <!--Use the name `authors` for the form array.-->
             <ul class="course__authors__list" style="list-style: none">
-              <li *ngFor="let author of courseForm.get('authors')?.value; let i = index" class="author-item">
-                <span>{{ author }}</span>
+              <li *ngFor="let author of availableAuthors; let i = index" class="author-item">
+                <span>{{ author.name }}</span>
                 <app-button
                   [iconName]="'plus'"
                   [type]="'button'"
                   [variant]="'outlined'"
-                  (click)="addAuthor(author)"
+                  (click)="addAuthor(author.name)"
                 ></app-button>
               </li>
             </ul>

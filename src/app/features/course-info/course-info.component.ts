@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, inject } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
+import { Author } from "@app/shared/interfaces/author.interface";
 import { CoursesStateFacade } from "@app/store/courses/courses.facade";
 
 @Component({
@@ -13,7 +14,7 @@ export class CourseInfoComponent implements OnInit {
   @Input() description!: string;
   @Input() creationDate!: Date;
   @Input() duration!: number;
-  @Input() authors: string[] = [];
+  @Input() authors: Author[] = [];
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);

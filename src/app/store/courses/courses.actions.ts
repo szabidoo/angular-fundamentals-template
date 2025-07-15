@@ -1,7 +1,8 @@
 // @ts-nocheck
 import { createAction, props } from "@ngrx/store";
-import { CoursesConstants } from "@app/store/courses/courses.constants";
 import { Course, CreateCourse } from "@app/shared/interfaces/course.interface";
+import { Author } from "@app/shared/interfaces/author.interface";
+import { CoursesConstants } from "./courses.constants";
 
 // Actions for request all Courses
 export const requestAllCourses = createAction(CoursesConstants.REQUEST_ALL_COURSES);
@@ -72,5 +73,37 @@ export const requestCreateCourseSuccess = createAction(
 );
 export const requestCreateCourseFail = createAction(
   CoursesConstants.REQUEST_CREATE_COURSE_FAIL,
+  props<{ error: string }>()
+);
+
+// Actions for All Authors
+export const requestAllAuthors = createAction(CoursesConstants.REQUEST_ALL_AUTHORS);
+export const requestAllAuthorsSuccess = createAction(
+  CoursesConstants.REQUEST_ALL_AUTHORS_SUCCESS,
+  props<{ authors: Author[] }>()
+);
+export const requestAllAuthorsFail = createAction(
+  CoursesConstants.REQUEST_ALL_AUTHORS_FAIL,
+  props<{ error: string }>()
+);
+
+export const requestSingleAuthor = createAction(CoursesConstants.REQUEST_AUTHOR_NAME);
+export const requestSingleAuthorSuccess = createAction(
+  CoursesConstants.REQUEST_SINGLE_AUTHOR_SUCCESS,
+  props<{ author: Author }>()
+);
+export const requestSingleAuthorFail = createAction(
+  CoursesConstants.REQUEST_SINGLE_AUTHOR_FAIL,
+  props<{ error: string }>()
+);
+
+// Actions for Create Author
+export const requestCreateAuthor = createAction(CoursesConstants.REQUEST_CREATE_AUTHOR, props<{ name: string }>());
+export const requestCreateAuthorSuccess = createAction(
+  CoursesConstants.REQUEST_CREATE_AUTHOR_SUCCESS,
+  props<{ author: Author }>()
+);
+export const requestCreateAuthorFail = createAction(
+  CoursesConstants.REQUEST_CREATE_AUTHOR_FAIL,
   props<{ error: string }>()
 );

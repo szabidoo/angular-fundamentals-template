@@ -1,67 +1,42 @@
-import { Component, inject, ViewChild } from "@angular/core";
-import { NgForm } from "@angular/forms";
+import { Component, OnInit, inject } from "@angular/core";
 import { Router } from "@angular/router";
+import { AuthStateFacade } from "@app/store/auth/auth.facade";
+import { UserStateFacade } from "@app/store/user/user.facade";
 import { LoginRequest } from "@app/auth/models/auth.interface";
-import { AuthService } from "@app/auth/services/auth.service";
+import { filter, take } from "rxjs/operators";
 
 @Component({
   selector: "app-login-form",
   templateUrl: "./login-form.component.html",
   styleUrls: ["./login-form.component.scss"],
 })
-export class LoginFormComponent {
-  @ViewChild("loginForm") public loginForm!: NgForm;
-  private authService = inject(AuthService);
+export class LoginFormComponent implements OnInit {
+  // Template properties
+  email = "";
+  password = "";
+  name = "";
+
+  // Inject services first
+  private authFacade = inject(AuthStateFacade);
+  private userFacade = inject(UserStateFacade);
   private router = inject(Router);
 
-  email!: string;
-  password!: string;
-  isLoading = false;
+  // Then use them in Observable definitions
+  isLoading$ = this.authFacade.isLoading$;
+  error$ = this.authFacade.error$;
+  isAuthorized$ = this.authFacade.isAuthorized$;
 
-  login(user: LoginRequest) {
-    if (this.isLoading) return;
+  ngOnInit(): void {}
+  onSubmit(): void {
+    if (this.email && this.password) {
+      const loginData: LoginRequest = {
+        name: this.name,
+        email: this.email,
+        password: this.password,
+      };
 
-    this.isLoading = true;
-
-    this.authService.login(user).subscribe({
-      next: (response) => {
-        if (response.successful) {
-          console.log("Login successful, navigating...");
-
-          setTimeout(() => {
-            this.router.navigate(["/courses"]).then(
-              (success) => {
-                console.log("Navigation success:", success);
-                this.isLoading = false;
-              },
-              (error) => {
-                console.error("Navigation error:", error);
-                this.isLoading = false;
-                window.location.href = "/courses";
-              }
-            );
-          }, 200);
-        } else {
-          console.error("Login was not successful");
-          this.isLoading = false;
-        }
-      },
-      error: (error) => {
-        console.error("Login error:", error);
-        this.isLoading = false;
-      },
-    });
-  }
-
-  onSubmit(form: NgForm) {
-    if (this.isLoading) return;
-
-    Object.values(form.controls).forEach((control) => {
-      control.markAsTouched();
-    });
-
-    if (form.valid) {
-      this.login(form.value);
+      console.log("Dispatching login action...", loginData);
+      this.authFacade.login(loginData);
     }
   }
 }

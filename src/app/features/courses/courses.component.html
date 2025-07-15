@@ -4,13 +4,13 @@
   <app-courses-list
     *ngIf="courses.length > 0; else nocourse"
     [courses]="courses"
-    [editable]="(isEditable | async) ?? false"
+    [editable]="(isEditable$ | async) ?? false"
     (showCourse)="onShowCourse($event)"
     (editCourse)="onEditCourse($event)"
     (deleteCourse)="onDeleteCourse($event)"
   ></app-courses-list>
 
-  <app-button *ngIf="isEditable | async" [buttonText]="'Add course'" (click)="createCourse()"></app-button>
+  <app-button *ngIf="isEditable$ | async" [buttonText]="'Add course'" (click)="createCourse()"></app-button>
 
   <ng-template #nocourse>
     <app-info [title]="'Your list is empty'" [text]="'Please use Add New Course button to add your first course.'">

@@ -30,3 +30,12 @@ export const getCourse = createSelector(selectCoursesState, (state: CoursesState
 
 // Selector for getting the error message
 export const getErrorMessage = createSelector(selectCoursesState, (state: CoursesState) => state.errorMessage);
+
+export const getAllAuthors = createSelector(selectCoursesState, (state) => state.authors);
+export const getAuthorsLoading = createSelector(selectCoursesState, (state) => state.authorsLoading);
+
+// Selector for getting a single author by ID
+export const getSingleAuthor = (authorId: string) =>
+  createSelector(selectCoursesState, (state: CoursesState) => {
+    return state.authors.find((author) => author.id === authorId) || null;
+  });

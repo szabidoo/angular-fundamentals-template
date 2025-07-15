@@ -5,6 +5,7 @@ import { Observable } from "rxjs";
 import { Course } from "@app/shared/interfaces/course.interface";
 import * as CoursesActions from "./courses.actions";
 import * as CoursesSelectors from "./courses.selectors";
+import { Author } from "@app/shared/interfaces/author.interface";
 
 @Injectable({
   providedIn: "root",
@@ -17,6 +18,8 @@ export class CoursesStateFacade {
   allCourses$: Observable<Course[]>;
   course$: Observable<Course>;
   errorMessage$: Observable<string>;
+  allAuthors$: Observable<Author[]>;
+  authorsLoading$: Observable<boolean>;
 
   constructor(private store: Store) {
     this.isAllCoursesLoading$ = this.store.pipe(select(CoursesSelectors.isAllCoursesLoadingSelector));
@@ -26,6 +29,8 @@ export class CoursesStateFacade {
     this.allCourses$ = this.store.pipe(select(CoursesSelectors.getAllCourses));
     this.course$ = this.store.pipe(select(CoursesSelectors.getCourse));
     this.errorMessage$ = this.store.pipe(select(CoursesSelectors.getErrorMessage));
+    this.allAuthors$ = this.store.pipe(select(CoursesSelectors.getAllAuthors));
+    this.authorsLoading$ = this.store.pipe(select(CoursesSelectors.getAuthorsLoading));
   }
 
   getAllCourses(): void {
@@ -50,5 +55,17 @@ export class CoursesStateFacade {
 
   deleteCourse(id: string): void {
     this.store.dispatch(CoursesActions.requestDeleteCourse({ id }));
+  }
+
+  getAllAuthors(): void {
+    this.store.dispatch(CoursesActions.requestAllAuthors());
+  }
+
+  createAuthor(name: string): void {
+    this.store.dispatch(CoursesActions.requestCreateAuthor({ name }));
+  }
+
+  getSingleAuthor(id: string): void {
+    this.store.dispatch(CoursesActions.requestSingleAuthor({ id }));
   }
 }

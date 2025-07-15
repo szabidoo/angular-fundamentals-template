@@ -5,6 +5,7 @@ import {
   CreateCourse,
   EditCourse,
   SingleCourseResponse,
+  CourseFromAPI,
 } from "@app/shared/interfaces/course.interface";
 import { BehaviorSubject, catchError, finalize, map, tap, switchMap, forkJoin, of } from "rxjs";
 import { CoursesService } from "./courses.service";
@@ -37,21 +38,27 @@ export class CoursesStoreService {
     this.coursesService
       .getAll()
       .pipe(
-        switchMap((coursesResponse) => {
-          const courses = coursesResponse.result;
+        switchMap((coursesResponse: CourseResponse) => {
+          const courses: CourseFromAPI[] = coursesResponse.result;
 
-          const transformedCourses$ = courses.map((course) =>
+          const transformedCourses$ = courses.map((course: CourseFromAPI) =>
             forkJoin({
               authors: forkJoin(
-                course.authors.map((authorId) =>
-                  this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
+                course.authors.map((authorId: string) =>
+                  this.coursesService.getAuthorById(authorId).pipe(
+                    map((response) => ({ id: authorId, name: response.result?.name || "Unknown Author" })),
+                    catchError(() => of({ id: authorId, name: "Unknown Author" }))
+                  )
                 )
               ),
             }).pipe(
-              map(({ authors }) => ({
-                ...course,
-                authors,
-              }))
+              map(
+                ({ authors }) =>
+                  ({
+                    ...course,
+                    authors,
+                  } as Course)
+              )
             )
           );
 
@@ -60,7 +67,7 @@ export class CoursesStoreService {
         finalize(() => this.isLoading$$.next(false))
       )
       .subscribe({
-        next: (transformedCourses) => {
+        next: (transformedCourses: Course[]) => {
           this.courses$$.next(transformedCourses);
         },
         error: (error) => {
@@ -75,7 +82,22 @@ export class CoursesStoreService {
     return this.coursesService.createCourse(course).pipe(
       tap((response: SingleCourseResponse) => {
         if (response.successful && response.result) {
-          this.courses$$.next([...this.courses$$.value, response.result]);
+          const courseFromAPI: CourseFromAPI = response.result;
+
+          forkJoin(
+            courseFromAPI.authors.map((authorId: string) =>
+              this.coursesService.getAuthorById(authorId).pipe(
+                map((authorResponse) => ({ id: authorId, name: authorResponse.result?.name || "Unknown Author" })),
+                catchError(() => of({ id: authorId, name: "Unknown Author" }))
+              )
+            )
+          ).subscribe((authors) => {
+            const convertedCourse: Course = {
+              ...courseFromAPI,
+              authors,
+            };
+            this.courses$$.next([...this.courses$$.value, convertedCourse]);
+          });
         }
       }),
 
@@ -96,12 +118,15 @@ export class CoursesStoreService {
     return this.coursesService.getCourse(id).pipe(
       switchMap((courseResponse: SingleCourseResponse) => {
         if (courseResponse.successful && courseResponse.result) {
-          const course = courseResponse.result;
+          const course: CourseFromAPI = courseResponse.result;
 
           return forkJoin({
             authors: forkJoin(
-              course.authors.map((authorId) =>
-                this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
+              course.authors.map((authorId: string) =>
+                this.coursesService.getAuthorById(authorId).pipe(
+                  map((response) => ({ id: authorId, name: response.result?.name || "Unknown Author" })),
+                  catchError(() => of({ id: authorId, name: "Unknown Author" }))
+                )
               )
             ),
           }).pipe(
@@ -110,7 +135,7 @@ export class CoursesStoreService {
               result: {
                 ...course,
                 authors,
-              },
+              } as Course,
             }))
           );
         }
@@ -130,10 +155,25 @@ export class CoursesStoreService {
     return this.coursesService.editCourse(id, course).pipe(
       tap((response: SingleCourseResponse) => {
         if (response.successful && response.result) {
-          const currentCourses = this.courses$$.value;
-          const updatedCourse = currentCourses.map((course) => (course.id === id ? response.result : course));
+          const courseFromAPI: CourseFromAPI = response.result;
 
-          this.courses$$.next(updatedCourse);
+          forkJoin(
+            courseFromAPI.authors.map((authorId: string) =>
+              this.coursesService.getAuthorById(authorId).pipe(
+                map((authorResponse) => ({ id: authorId, name: authorResponse.result?.name || "Unknown Author" })),
+                catchError(() => of({ id: authorId, name: "Unknown Author" }))
+              )
+            )
+          ).subscribe((authors) => {
+            const convertedCourse: Course = {
+              ...courseFromAPI,
+              authors,
+            };
+
+            const currentCourses = this.courses$$.value;
+            const updatedCourse = currentCourses.map((course) => (course.id === id ? convertedCourse : course));
+            this.courses$$.next(updatedCourse);
+          });
         }
       }),
 
@@ -159,70 +199,6 @@ export class CoursesStoreService {
         this.isLoading$$.next(false);
       })
     );
-  }
-
-  filterCourses(value: string) {
-    this.isLoading$$.next(true);
-
-    if (!value || value.trim() === "") {
-      this.getAll();
-      this.isLoading$$.next(false);
-      return this.courses$;
-    }
-
-    this.coursesService
-      .getAll()
-      .pipe(
-        switchMap((coursesResponse) => {
-          const courses = coursesResponse.result;
-
-          const transformedCourses$ = courses.map((course) =>
-            forkJoin({
-              authors: forkJoin(
-                course.authors.map((authorId) =>
-                  this.getAuthorById(authorId).pipe(catchError(() => of("Unknown Author")))
-                )
-              ),
-            }).pipe(
-              map(({ authors }) => ({
-                ...course,
-                authors,
-              }))
-            )
-          );
-
-          return forkJoin(transformedCourses$);
-        }),
-        map((transformedCourses) => {
-          const searchTerm = value.toLowerCase().trim();
-
-          const filteredCourses = transformedCourses.filter((course) => {
-            return (
-              course.title.toLowerCase().includes(searchTerm) ||
-              course.description.toLowerCase().includes(searchTerm) ||
-              course.duration.toString().includes(searchTerm) ||
-              course.creationDate.toString().toLowerCase().includes(searchTerm) ||
-              course.authors.some((author: string) => author.toLowerCase().includes(searchTerm))
-            );
-          });
-
-          return filteredCourses;
-        }),
-        tap((filteredCourses) => {
-          console.log("Filtered courses:", filteredCourses);
-          this.courses$$.next(filteredCourses);
-        }),
-        catchError((err) => {
-          console.error(err);
-          throw err;
-        }),
-        finalize(() => {
-          this.isLoading$$.next(false);
-        })
-      )
-      .subscribe();
-
-    return this.courses$;
   }
 
   getAllAuthors() {

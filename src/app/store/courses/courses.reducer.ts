@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Action, createReducer, on } from "@ngrx/store";
 import { Course } from "@app/shared/interfaces/course.interface";
+import { Author } from "@app/shared/interfaces/author.interface";
 import * as CoursesActions from "./courses.actions";
 
 export const coursesFeatureKey = "courses";
@@ -12,6 +13,8 @@ export interface CoursesState {
   isSingleCourseLoading: boolean;
   isSearchState: boolean;
   errorMessage: string;
+  authors: Author[];
+  authorsLoading: boolean;
 }
 
 export const initialState: CoursesState = {
@@ -21,6 +24,8 @@ export const initialState: CoursesState = {
   isSingleCourseLoading: false,
   isSearchState: false,
   errorMessage: "",
+  authors: [],
+  authorsLoading: false,
 };
 
 export const coursesReducer = createReducer(
@@ -126,6 +131,50 @@ export const coursesReducer = createReducer(
   on(CoursesActions.requestCreateCourseFail, (state, { error }) => ({
     ...state,
     errorMessage: error,
+  })),
+
+  // All Authors
+  on(CoursesActions.requestAllAuthors, (state) => ({
+    ...state,
+    authorsLoading: true,
+  })),
+  on(CoursesActions.requestAllAuthorsSuccess, (state, { authors }) => ({
+    ...state,
+    authors,
+    authorsLoading: false,
+  })),
+  on(CoursesActions.requestAllAuthorsFail, (state) => ({
+    ...state,
+    authorsLoading: false,
+  })),
+
+  // Single Author
+  on(CoursesActions.requestSingleAuthor, (state) => ({
+    ...state,
+    isSingleAuthorLoading: true,
+    errorMessage: "",
+  })),
+  on(CoursesActions.requestSingleAuthorSuccess, (state, { author }) => ({
+    ...state,
+    author,
+    isSingleAuthorLoading: false,
+    errorMessage: "",
+  })),
+  on(CoursesActions.requestSingleAuthorFail, (state, { error }) => ({
+    ...state,
+    isSingleAuthorLoading: false,
+    errorMessage: error,
+  })),
+
+  // Create Author
+  on(CoursesActions.requestCreateAuthor, (state) => ({
+    ...state,
+    authorsLoading: true, // Jelzi a folyamatot
+  })),
+  on(CoursesActions.requestCreateAuthorSuccess, (state, { author }) => ({
+    ...state,
+    authors: [...state.authors, author], // Hozzáadja az új authort a listához
+    authorsLoading: false,
   }))
 );
 

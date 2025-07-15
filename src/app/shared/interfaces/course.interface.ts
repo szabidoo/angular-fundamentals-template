@@ -1,4 +1,16 @@
+import { Author } from "./author.interface";
+
 export interface Course {
+  title: string;
+  description: string;
+  creationDate: Date;
+  duration: number;
+  authors: Author[];
+  id: string;
+  editable?: boolean;
+}
+
+export interface CourseFromAPI {
   title: string;
   description: string;
   creationDate: Date;
@@ -10,7 +22,7 @@ export interface Course {
 
 export interface CourseResponse {
   successful: boolean;
-  result: Course[];
+  result: CourseFromAPI[];
 }
 
 export interface EditCourse {
@@ -22,7 +34,7 @@ export interface EditCourse {
 
 export interface SingleCourseResponse {
   successful: boolean;
-  result: Course;
+  result: CourseFromAPI;
 }
 
 export interface CreateCourse {

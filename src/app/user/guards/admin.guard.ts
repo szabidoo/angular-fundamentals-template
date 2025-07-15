@@ -1,28 +1,28 @@
 import { inject, Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from "@angular/router";
+import { CanActivate, Router, UrlTree } from "@angular/router";
 import { map, Observable } from "rxjs";
-import { UserStoreService } from "../services/user-store.service";
+import { filter, take, switchMap } from "rxjs/operators";
+import { UserStateFacade } from "@app/store/user/user.facade";
 
 @Injectable({
   providedIn: "root",
 })
 export class AdminGuard implements CanActivate {
-  private userStore = inject(UserStoreService);
+  private userFacade = inject(UserStateFacade);
   private router = inject(Router);
 
-  canActivate(): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
-    // Null check hozzáadása
-    if (!this.userStore.isAdmin$) {
-      console.error("isAdmin$ is undefined in UserStoreService");
-      return this.router.createUrlTree(["/courses"]);
-    }
-
-    return this.userStore.isAdmin$.pipe(
+  canActivate(): Observable<boolean | UrlTree> {
+    return this.userFacade.isLoading$.pipe(
+      filter((isLoading) => !isLoading),
+      take(1),
+      switchMap(() => this.userFacade.isAdmin$),
+      take(1),
       map((isAdmin) => {
-        console.log("AdminGuard - isAdmin:", isAdmin);
+        console.log("AdminGuard - isAdmin after loading:", isAdmin);
         if (isAdmin) {
           return true;
         } else {
+          console.log("AdminGuard - User is not admin, redirecting to courses");
           return this.router.createUrlTree(["/courses"]);
         }
       })
